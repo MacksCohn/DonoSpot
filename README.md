@@ -1,3 +1,4 @@
 # Donospot
 
 ## Contributors
+Max Cohn
