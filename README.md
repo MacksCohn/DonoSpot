@@ -2,3 +2,4 @@
 
 ## Contributors
 Max Cohn
+Brendan Mulligan
