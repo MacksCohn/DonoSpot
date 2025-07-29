@@ -2,7 +2,39 @@
 // editing.js
 
 const { useState, useEffect } = React;
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyC_CiRqTcPQsXLmSWOsXFqI2WwXFmYxTD0",
+  authDomain: "donospot.firebaseapp.com",
+  projectId: "donospot",
+  storageBucket: "donospot.firebasestorage.app",
+  messagingSenderId: "850395903397",
+  appId: "1:850395903397:web:92701b3fba5a9d9eaa244c",
+  measurementId: "G-GFLZSWW3TD",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const profile = doc(db, "charities", "3ItNyesqTpHx1XbHNkSl");
+
+//returns key value pairs - data.Name and data.Bio for now
+async function loadProfile() {
+    const snap = await getDoc(profile);
+    const data = snap.data();
+    return data; 
+}
+
+//capital = db, lowecase = local
+async function saveProfile(name, bio){
+    await setDoc(profile, {
+        Name: name,
+        Bio: bio
+    });
+}
+
+saveProfile("American Red", "nah");
 function Main() {
     const [mode, setMode] = useState('read');
 
