@@ -1,8 +1,30 @@
 // Max Cohn
 // editing.js
-
+ 
 const { useState, useEffect } = React;
 
+
+
+
+
+const profile = firebase.doc(db, "charities", "3ItNyesqTpHx1XbHNkSl");
+
+//returns key value pairs - data.Name and data.Bio for now
+async function loadProfile() {
+    const snap = await firebase.getDoc(profile);
+    const data = snap.data();
+    return data; 
+}
+
+//capital = db, lowecase = local
+async function saveProfile(name, bio){
+    await firebase.setDoc(profile, {
+        Name: name,
+        Bio: bio
+    });
+}
+
+saveProfile("American Red", "nah");
 function Main() {
     const [mode, setMode] = useState('read');
 
