@@ -12,14 +12,14 @@ async function loadProfile() {
 }
 
 //capital = db, lowecase = local
-async function saveProfile(name, bio){
+async function saveProfile(name, categories, bio){
     await firebase.setDoc(profile, {
         Name: name,
-        Bio: bio
+        Categories: categories,
+        Bio: bio,
     });
 }
 
-saveProfile("American Red Cross", "The American Red Cross helps disaster victims, supports military families, and provides blood donations and emergency services.");
 function Main() {
     const [mode, setMode] = useState('read');
 
@@ -29,7 +29,7 @@ function Main() {
 
     return(
         <div>
-            <ModeButton mode={mode} onToggle={ToggleMode} /><PublishButton />
+            <ModeButton mode={mode} onToggle={ToggleMode} />
             <Editable id='Name' type='h1' mode={mode}>American Red Cross</Editable>
             <Editable id='Categories' type='p' mode={mode}>Category: Disaster Relief, Size: Large</Editable>
             <Editable id='Bio' type='p' mode={mode}>The American Red Cross helps disaster victims, supports military families, and provides blood donations and emergency services.</Editable>
@@ -52,20 +52,19 @@ function ModeButton({mode, onToggle}) {
         );
 }
 
-function PublishButton() {
-    return(
-        <>
-        </>
-    );
-}
-
+// Set id to the name we want in the database
 function Editable({ type, children, mode, id}) {
     const Type = type;
     const [text, setText] = useState(children);
 
     useEffect(() => {
-        setText(children)
+        setText(children);
     }, [children]);
+
+    useEffect(() => {
+        const fetchData = async () => {return await loadProfile(profile)};
+        fetchData().then((data) => {setText(data[id])});
+    }, []);
 
     if (mode === 'read') {
         return(
@@ -75,7 +74,10 @@ function Editable({ type, children, mode, id}) {
     else if (mode === 'edit') {
         return(
             <>
-                <input value={text} onChange={(event) => setText(event.target.value)}></input>
+                <input value={text} onChange={(event) => {
+                    setText(event.target.value);
+                    firebase.setDoc(profile, {[id] : event.target.value}, {merge:true});
+                }}></input>
                 <br/>
             </>
         );
