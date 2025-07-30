@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>American Red Cross - DonoSpot</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header>
-    <div class="logo">DONO<span class="heart">❤</span>SPOT</div>
-    <nav><a href="index.html">Home</a></nav>
-  </header>
+    <head>
+        <meta charset="UTF-8">
+        <title>American Red Cross - DonoSpot</title>
+        <link rel="stylesheet" href="styles.css">
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js'></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    </head>
+    <body>
+        <header id='header'></header>
 
-  <main style="padding: 2rem;">
-    <h1>American Red Cross</h1>
-    <p><strong>Category:</strong> Large, Disaster Relief</p>
+        <main id='main'></main>
 
-    <p>
-      Our mission is more than words. We always aim to prevent and relieve suffering with every action.
-      The Red Cross shelters, feeds and provides comfort to people affected by disasters; supplies about
-      40% of the nation’s blood; teaches skills that save lives; distributes international humanitarian aid;
-      and supports veterans, military members and their families.
-    </p>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+            import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+            const firebaseConfig = {
+                    apiKey: "AIzaSyC_CiRqTcPQsXLmSWOsXFqI2WwXFmYxTD0",
+                    authDomain: "donospot.firebaseapp.com",
+                    projectId: "donospot",
+                    storageBucket: "donospot.firebasestorage.app",
+                    messagingSenderId: "850395903397",
+                    appId: "1:850395903397:web:92701b3fba5a9d9eaa244c",
+                    measurementId: "G-GFLZSWW3TD",
+                };
 
-    <button onclick="history.back()" style="margin-top: 2rem; padding: 0.5rem 1rem;">← Back to Search</button>
-  </main>
-</body>
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+
+            window.firebase = { getDoc, setDoc, doc };
+            window.db = db;
+        </script>
+        <script type='text/babel' src='./js/editing.js'></script>
+    </body>
 </html>
