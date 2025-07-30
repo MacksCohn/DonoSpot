@@ -1,6 +1,5 @@
 // Max Cohn
 // editing.js
- 
 const { useState, useEffect } = React;
 const profile = firebase.doc(db, "charities", "3ItNyesqTpHx1XbHNkSl");
 
