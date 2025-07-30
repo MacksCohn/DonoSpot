@@ -2,11 +2,6 @@
 // editing.js
  
 const { useState, useEffect } = React;
-
-
-
-
-
 const profile = firebase.doc(db, "charities", "3ItNyesqTpHx1XbHNkSl");
 
 //returns key value pairs - data.Name and data.Bio for now
@@ -24,7 +19,7 @@ async function saveProfile(name, bio){
     });
 }
 
-saveProfile("American Red", "nah");
+saveProfile("American Red Cross", "The American Red Cross helps disaster victims, supports military families, and provides blood donations and emergency services.");
 function Main() {
     const [mode, setMode] = useState('read');
 
@@ -34,16 +29,37 @@ function Main() {
 
     return(
         <div>
-            <ModeButton mode={mode} onToggle={ToggleMode} />
-            <Editable type='h1' mode={mode}>American Red Cross</Editable>
-            <Editable type='p' mode={mode}>Category: Disaster Relief, Size: Large</Editable>
-            <Editable type='p' mode={mode}>The American Red Cross helps disaster victims, supports military families, and provides blood donations and emergency services.</Editable>
+            <ModeButton mode={mode} onToggle={ToggleMode} /><PublishButton />
+            <Editable id='Name' type='h1' mode={mode}>American Red Cross</Editable>
+            <Editable id='Categories' type='p' mode={mode}>Category: Disaster Relief, Size: Large</Editable>
+            <Editable id='Bio' type='p' mode={mode}>The American Red Cross helps disaster victims, supports military families, and provides blood donations and emergency services.</Editable>
             <LoginButton text={'Login'}/>
         </div>
     );
 }
 
-function Editable({ type, children, mode}) {
+function ModeButton({mode, onToggle}) {
+    if (mode === 'read')
+        return(
+            <button onClick={onToggle}>{mode}</button>
+        );
+    else if (mode === 'edit')
+        return(
+            <>
+                <button onClick={onToggle}>{mode}</button>
+                <br />
+            </>
+        );
+}
+
+function PublishButton() {
+    return(
+        <>
+        </>
+    );
+}
+
+function Editable({ type, children, mode, id}) {
     const Type = type;
     const [text, setText] = useState(children);
 
@@ -53,7 +69,7 @@ function Editable({ type, children, mode}) {
 
     if (mode === 'read') {
         return(
-            <Type>{text}</Type>
+            <Type id={id}>{text}</Type>
         );
     }
     else if (mode === 'edit') {
@@ -72,19 +88,6 @@ function LoginButton({text}) {
     );
 }
 
-function ModeButton({mode, onToggle}) {
-    if (mode === 'read')
-        return(
-            <button onClick={onToggle}>{mode}</button>
-        );
-    else if (mode === 'edit')
-        return(
-            <>
-                <button onClick={onToggle}>{mode}</button>
-                <br />
-            </>
-        );
-}
 
 const root = ReactDOM.createRoot(document.getElementById('main'));
 root.render(<Main mode='edit'/>);
