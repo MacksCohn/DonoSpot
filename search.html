@@ -1,48 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Search Results - DonoSpot</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="script.js" type="module" defer></script>
-</head>
-<body>
-  <header>
-    <div class="logo">DONO<span class="heart">❤</span>SPOT</div>
-    <nav><a href="index.html">Home</a></nav>
-  </header>
+    <head>
+        <meta charset="UTF-8">
+        <title>Search Results - DonoSpot</title>
+        <link rel="stylesheet" href="styles.css">
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js'></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    </head>
+    <body>
+        <header id='header'>
+        </header>
 
-  <div class="search-bar">
-    <input type="text" value="America">
-    <button>🔍</button>
-  </div>
+        <main id='main'>
+        </main>
 
-  <div class="filters">
-    <button class="filter-btn" data-filter="Large">Large</button>
-    <button class="filter-btn" data-filter="Disaster">Disaster Relief</button>
-  </div>
-
-  <ul class="charity-list">
-    <li data-tags="Large Disaster">
-      <a href="charity.html" class="charity-name" style="color: blue; text-decoration: underline;">American Red Cross</a>
-    </li>
-    <li data-tags="Large Disaster">
-      <span class="charity-name">Feeding America</span>
-      <div class="charity-description">Feeding America is a nationwide network of food banks committed to fighting hunger.</div>
-    </li>
-    <li data-tags="Large">
-      <span class="charity-name">American Heart Association</span>
-      <div class="charity-description">Dedicated to fighting heart disease and stroke.</div>
-    </li>
-    <li data-tags="">
-      <span class="charity-name">Challenge Americas</span>
-      <div class="charity-description">Supports wounded veterans through music therapy and arts.</div>
-    </li>
-    <li data-tags="Large Disaster">
-      <span class="charity-name">Americare</span>
-      <div class="charity-description">Provides health and disaster relief globally.</div>
-    </li>
-  </ul>
-
-</body>
+        <script type='text/babel' src='./js/search.js'></script>
+    </body>
 </html>
