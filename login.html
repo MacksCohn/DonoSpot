@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - DonoSpot</title>
+</head>
+<body>
+
+  <h1>Login to DonoSpot</h1>
+
+  <form onsubmit="handleLogin(event)">
+    <label>Email:</label><br>
+    <input type="email" id="email"><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" id="password"><br><br>
+
+    <button type="submit">Login</button>
+    <button type="button">Signup</button>
+  </form>
+
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      if (email && pass) {
+        window.location.href = 'index.html';
+      } else {
+        alert('Please enter both email and password');
+      }
+    }
+  </script>
+
+</body>
+</html>
