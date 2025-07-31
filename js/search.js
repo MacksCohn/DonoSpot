@@ -107,8 +107,8 @@ function Main() {
 }
 
 
-const headerRoot = ReactDOM.createRoot(document.getElementById('header'));
+const headerRoot = ReactDOM.createRoot($('header')[0]);
 headerRoot.render(<Header />);
 
-const mainRoot = ReactDOM.createRoot(document.getElementById('main'));
+const mainRoot = ReactDOM.createRoot($('main')[0]);
 mainRoot.render(<Main />);
