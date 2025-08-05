@@ -1,16 +1,26 @@
 const { useState, useEffect } = React;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  const charities = document.querySelectorAll(".charity-list li");
-  const activeFilters = new Set();
-  charities.forEach(charity => {
-    charity.querySelector(".charity-name").addEventListener("click", () => {
-      const desc = charity.querySelector(".charity-description");
-      desc.style.display = desc.style.display === "block" ? "none" : "block";
-    });
-  });
+// Charity data with their Firebase IDs
+const charitiesData = [
+    { id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
+    { id: "QWoT14rIl6RPePWoKMSo", name: "Feeding America", tags: "Large Disaster", description: "Feeding America is a nationwide network of food banks committed to fighting hunger." },
+    { id: "S0fRydl6SutwHSg7Qqd6", name: "American Heart Association", tags: "Large", description: "Dedicated to fighting heart disease and stroke." },
+    { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
+    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }
+];
 
+function CharityList() {
+    return(
+        <ul className="charity-list">
+            {charitiesData.map(charity => (
+                <li key={charity.id} data-tags={charity.tags}>
+                    <a href={`charity.html?cid=${charity.id}`} className="charity-name">{charity.name}</a>
+                    <div className="charity-description">{charity.description}</div>
+                </li>
+            ))}
+        </ul>
+    );
+}
 
   filterButtons.forEach(button => {
     button.addEventListener("click", () => {
