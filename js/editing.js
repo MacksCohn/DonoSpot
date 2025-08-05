@@ -119,21 +119,51 @@ function Editable({ type, children, mode, id}) {
     if (!editableIds.includes(id))
         editableIds.push(id);
 
-    if (mode === 'read') {
-        return(
-            <Type id={id}>{text}</Type>
-        );
-    }
-    else if (mode === 'edit') {
-        return(
-            <>
-                <input id={id} value={text} onChange={(event) => {
+    if (type === 'button') {
+        if (mode === 'read') {
+            return(
+                <a href={text}>
+                    <Type id={id} className='donate'>Donate</Type>
+                </a>
+            );
+        }
+        else if (mode === 'edit') {
+            return(
+                <>
+                Donation Link:
+                <textarea id={id} value={text} onChange={(event) => {
                     setText(event.target.value);
-                }}></input>
+                }}></textarea>
                 <br/>
-            </>
-        );
+                </>
+            );
+        }
     }
+    else {
+        if (mode === 'read') {
+            return(
+                <Type id={id}>{text}</Type>
+            );
+        }
+        else if (mode === 'edit') {
+            return(
+                <>
+                <textarea id={id} value={text} onChange={(event) => {
+                    setText(event.target.value);
+                }}></textarea>
+                <br/>
+                </>
+            );
+        }
+    }
+}
+
+function DonateButton({mode, children}) {
+    return(
+        <>
+        <Editable id='donate' mode={mode} type='button'>{children}</Editable>
+        </>
+    );
 }
 
 function LoginButton({text}) {
