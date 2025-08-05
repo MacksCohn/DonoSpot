@@ -147,7 +147,7 @@ function Editable({ type, children, mode, id}) {
 function DonateButton({mode, children}) {
     return(
         <>
-        <Editable id='donate-link' mode={mode} type='button'>{children}</Editable>
+        <Editable id='donate' mode={mode} type='button'>{children}</Editable>
         </>
     );
 }
