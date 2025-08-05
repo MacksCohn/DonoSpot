@@ -1,41 +1,35 @@
 const { useState, useEffect } = React;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  const charities = document.querySelectorAll(".charity-list li");
-  const activeFilters = new Set();
-  charities.forEach(charity => {
-    charity.querySelector(".charity-name").addEventListener("click", () => {
-      const desc = charity.querySelector(".charity-description");
-      desc.style.display = desc.style.display === "block" ? "none" : "block";
-    });
-  });
+// Charity data with their Firebase IDs
+const charitiesData = [
+    { id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
+    { id: "QWoT14rIl6RPePWoKMSo", name: "Feeding America", tags: "Large Disaster", description: "Feeding America is a nationwide network of food banks committed to fighting hunger." },
+    { id: "S0fRydl6SutwHSg7Qqd6", name: "American Heart Association", tags: "Large", description: "Dedicated to fighting heart disease and stroke." },
+    { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
+    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }
+];
 
+function CharityList() {
+    return(
+        <ul className="charity-list">
+        {charitiesData.map(charity => (
+            <li key={charity.id} data-tags={charity.tags}>
+            <a href={`charity.html?cid=${charity.id}`} className="charity-name">{charity.name}</a>
+            <div className="charity-description">{charity.description}</div>
+            </li>
+        ))}
+        </ul>
+    );
+}
 
-  filterButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const tag = button.dataset.filter;
-      if (activeFilters.has(tag)) {
-        activeFilters.delete(tag);
-        button.classList.remove("active");
-      } else {
-        activeFilters.add(tag);
-        button.classList.add("active");
-      }
-      filterCharities();
-    });
-  });
-
-  function filterCharities() {
+function filterCharities() {
     charities.forEach(charity => {
-      const tags = charity.dataset.tags.split(" ");
-      const matches = [...activeFilters].every(f => tags.includes(f));
-      const shouldShow = activeFilters.size === 0 || matches;
-      charity.style.display = shouldShow ? "list-item" : "none";
+        const tags = charity.dataset.tags.split(" ");
+        const matches = [...activeFilters].every(f => tags.includes(f));
+        const shouldShow = activeFilters.size === 0 || matches;
+        charity.style.display = shouldShow ? "list-item" : "none";
     });
-  }
-});
-
+}
 
 function SearchBar({children}) {
     const [text, setText] = useState(children);
@@ -43,11 +37,11 @@ function SearchBar({children}) {
     useEffect(() => {
         setText(children);
     }, [children]);
-        
+
     return(
         <div className="search-bar">
-            <input type="text" value={text}></input>
-            <button>🔍</button>
+        <input type="text" value={text}></input>
+        <button>🔍</button>
         </div>
     );
 }
@@ -55,37 +49,37 @@ function SearchBar({children}) {
 function Filters() {
     return(
         <div className="filters">
-            <button className="filter-btn" data-filter="Large">Large</button>
-            <button className="filter-btn" data-filter="Disaster">Disaster Relief</button>
+        <button className="filter-btn" data-filter="Large">Large</button>
+        <button className="filter-btn" data-filter="Disaster">Disaster Relief</button>
         </div>
     );
 }
 
-function CharityList() {
-    return(
-        <ul className="charity-list">
-            <li data-tags="Large Disaster">
-            <a href="charity.html" className="charity-name">American Red Cross</a>
-            </li>
-            <li data-tags="Large Disaster">
-            <span className="charity-name">Feeding America</span>
-            <div className="charity-description">Feeding America is a nationwide network of food banks committed to fighting hunger.</div>
-            </li>
-            <li data-tags="Large">
-            <span className="charity-name">American Heart Association</span>
-            <div className="charity-description">Dedicated to fighting heart disease and stroke.</div>
-            </li>
-            <li data-tags="">
-            <span className="charity-name">Challenge Americas</span>
-            <div className="charity-description">Supports wounded veterans through music therapy and arts.</div>
-            </li>
-            <li data-tags="Large Disaster">
-            <span className="charity-name">Americare</span>
-            <div className="charity-description">Provides health and disaster relief globally.</div>
-            </li>
-        </ul>
-    );
-}
+// function CharityList() {
+//  return(
+//      <ul className="charity-list">
+//          <li data-tags="Large Disaster">
+//          <a href="charity.html" className="charity-name">American Red Cross</a>
+//          </li>
+//          <li data-tags="Large Disaster">
+//          <span className="charity-name">Feeding America</span>
+//          <div className="charity-description">Feeding America is a nationwide network of food banks committed to fighting hunger.</div>
+//          </li>
+//          <li data-tags="Large">
+//          <span className="charity-name">American Heart Association</span>
+//          <div className="charity-description">Dedicated to fighting heart disease and stroke.</div>
+//          </li>
+//          <li data-tags="">
+//          <span className="charity-name">Challenge Americas</span>
+//          <div className="charity-description">Supports wounded veterans through music therapy and arts.</div>
+//          </li>
+//          <li data-tags="Large Disaster">
+//          <span className="charity-name">Americare</span>
+//          <div className="charity-description">Provides health and disaster relief globally.</div>
+//          </li>
+//      </ul>
+//  );
+//}
 
 function Header() {
     return(
@@ -112,3 +106,17 @@ headerRoot.render(<Header />);
 
 const mainRoot = ReactDOM.createRoot($('main')[0]);
 mainRoot.render(<Main />);
+
+$('.filter-btn').each(button => {
+    button.addEventListener("click", () => {
+        const tag = button.dataset.filter;
+        if (activeFilters.has(tag)) {
+            activeFilters.delete(tag);
+            button.classList.remove("active");
+        } else {
+            activeFilters.add(tag);
+            button.classList.add("active");
+        }
+        filterCharities();
+    });
+});
