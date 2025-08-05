@@ -25,10 +25,10 @@ async function saveProfile(name, categories, bio){
 function Header() {
     return(
         <>
-            <div class="logo">DONO<span class="heart">❤</span>SPOT</div>
-            <LoginButton text={'Login'}/>
-            <nav><a href="index.html">Home</a></nav>
-            <br />
+        <div className="logo">DONO<span className="heart">❤</span>SPOT</div>
+        <LoginButton text={'Login'}/>
+        <nav><a href="index.html">Home</a></nav>
+        <br />
         </>
     );
 }
@@ -42,11 +42,14 @@ function Main() {
 
     return(
         <div>
-            <ModeButton mode={mode} onToggle={ToggleMode} /> 
-            <Editable id='Name' type='h1' mode={mode}>Header Text</Editable>
-            <Editable id='Categories' type='p' mode={mode}>Categories Text</Editable>
-            <Editable id='Bio' type='p' mode={mode}>Description Text</Editable>
-            <PublishButton />
+        <ModeButton mode={mode} onToggle={ToggleMode} /> 
+        <Editable id='Name' type='h1' mode={mode}>Header Text</Editable>
+        <Editable id='Categories' type='p' mode={mode}>Categories Text</Editable>
+        <Editable id='Bio' type='p' mode={mode}>Description Text</Editable>
+        <DonateButton mode={mode}>https://www.redcross.org/donate/donation.html/?srsltid=AfmBOorJAr9YPP0YPE9egFAeDtzPatIOJTrYSU4_eEYOoX-J13QfKMO9</DonateButton>
+        <br /> 
+        <br/ >
+        <PublishButton />
         </div>
     );
 }
@@ -59,8 +62,8 @@ function ModeButton({mode, onToggle}) {
     else if (mode === 'edit')
         return(
             <>
-                <button onClick={onToggle}>Read</button>
-                <br />
+            <button onClick={onToggle}>Read</button>
+            <br />
             </>
         );
 }
@@ -78,6 +81,8 @@ function PublishChanges() {
         // This is kinda iffy we should probably change at some point
         if (element.tagName === 'INPUT')
             text = element.value;
+        if (element.tagName === 'BUTTON')
+            text = element.parentNode.href;
         else
             text = element.textContent;
         firebase.setDoc(profile, {[id] : text}, {merge:true});
@@ -100,21 +105,51 @@ function Editable({ type, children, mode, id}) {
     if (!editableIds.includes(id))
         editableIds.push(id);
 
-    if (mode === 'read') {
-        return(
-            <Type id={id}>{text}</Type>
-        );
-    }
-    else if (mode === 'edit') {
-        return(
-            <>
-                <input id={id} value={text} onChange={(event) => {
+    if (type === 'button') {
+        if (mode === 'read') {
+            return(
+                <a href={text}>
+                    <Type id={id} className='donate'>Donate</Type>
+                </a>
+            );
+        }
+        else if (mode === 'edit') {
+            return(
+                <>
+                Donation Link:
+                <textarea id={id} value={text} onChange={(event) => {
                     setText(event.target.value);
-                }}></input>
+                }}></textarea>
                 <br/>
-            </>
-        );
+                </>
+            );
+        }
     }
+    else {
+        if (mode === 'read') {
+            return(
+                <Type id={id}>{text}</Type>
+            );
+        }
+        else if (mode === 'edit') {
+            return(
+                <>
+                <textarea id={id} value={text} onChange={(event) => {
+                    setText(event.target.value);
+                }}></textarea>
+                <br/>
+                </>
+            );
+        }
+    }
+}
+
+function DonateButton({mode, children}) {
+    return(
+        <>
+        <Editable id='donate-link' mode={mode} type='button'>{children}</Editable>
+        </>
+    );
 }
 
 function LoginButton({text}) {
