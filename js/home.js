@@ -11,9 +11,7 @@ function Header() {
 function Main() {
     return(
         <>
-            <h1>Dono❤Spot</h1>
-
-            <a href="login.html">Logout</a>
+            <h1>Dono<span className="heart">❤</span>Spot</h1>
 
             <div className="search-bar">
                 <input type="text" placeholder="Search for a charity..."></input>
