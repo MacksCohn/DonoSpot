@@ -294,14 +294,17 @@ body > div:last-child button:hover {
 }
 
 /* Edit Mode Styles */
-input {
+input, textarea {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     padding: 0.75rem;
     margin-bottom: 1rem;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
     font-size: 1rem;
-    width: 100%;
+     width: 100%;
     max-width: 600px;
+    field-sizing: content;
+    resize:none;
     display: block;
 }
 
@@ -310,25 +313,36 @@ input {
     header {
         padding: 1rem;
     }
-    
+
     .logo {
         font-size: 1.5rem;
     }
-    
+
     h1 {
         font-size: 2rem;
     }
-    
+
     main p {
         font-size: 1.1rem;
     }
-    
+
     .features {
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .search-bar {
         width: 100%;
     }
 }
+
+#main button.donate {
+    background-color: #3B866E;
+}
+
+#main button.donate:hover {
+    background-color: #6EC3A8;
+    animation:ease-in-out;
+    animation-duration:200ms;
+}
+
