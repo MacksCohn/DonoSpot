@@ -49,7 +49,7 @@ function filterCharities() {
     });
 }
 
-function SearchBar({children = "", fullList, setFilteredList}) {
+function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
@@ -57,14 +57,37 @@ function SearchBar({children = "", fullList, setFilteredList}) {
     }, [children]);
 
     useEffect(() => {
-        const query = text.toLowerCase();
+        setText(children);
+    }, [children]);
+
+    useEffect(() => {
+        /*const query = text.toLowerCase();
         const filtered = fullList.filter(charity => 
             charity.name.toLowerCase().includes(query)
-        );
+        );*/
+        const filtered = [];
+        const query = text.toLowerCase();
+        fullList.forEach((charity) => {
+            const nameMatch = charity.name.toLowerCase().includes(query);
+
+            const tags =
+                typeof charity.tags === "string"
+                    ? charity.tags.toLowerCase().split(" ")
+                    : (charity.tags || []).map((t) => t.toLowerCase());
+
+            const matchesAllFilters =
+                activeFilters.size === 0 ||
+                [...activeFilters].every((filter) =>
+                    tags.includes(filter.toLowerCase())
+                );
+
+            if (nameMatch && matchesAllFilters) {
+                filtered.push(charity);
+            }
+        });
+
         setFilteredList(filtered);
-
-
-    }, [text, fullList]);
+    }, [text, fullList, activeFilters]);
 
     return (
         <div className="search-bar">
@@ -76,11 +99,22 @@ function SearchBar({children = "", fullList, setFilteredList}) {
     );
 }
 
-function Filters() {
-    return(
+function Filters({activeFilters, setActiveFilters}) {
+    const toggleFilter = (filter) => {
+        const updated = new Set(activeFilters);
+        if (updated.has(filter)) {
+            updated.delete(filter);
+        } else {
+            updated.add(filter);
+        }
+
+        setActiveFilters(updated);
+    };
+
+    return (
         <div className="filters">
-        <button className="filter-btn" data-filter="Large">Large</button>
-        <button className="filter-btn" data-filter="Disaster">Disaster Relief</button>
+            <button onClick={() => toggleFilter("Large")}>Large</button>
+            <button onClick={() => toggleFilter("Disaster")}>Disaster Relief</button>
         </div>
     );
 }
@@ -123,6 +157,7 @@ function Header() {
 function Main() {
     const [fullList, setFullList] = useState([]);
     const [filteredList, setFilteredList] = useState([]);
+    const [activeFilters, setActiveFilters] = useState(new Set());
     const urlParams = new URLSearchParams(window.location.search);
     const defaultSearch = urlParams.get('query');
     useEffect(() => {
@@ -133,8 +168,8 @@ function Main() {
     }, [])
     return(
         <>
-        <SearchBar fullList={fullList} setFilteredList={setFilteredList}>{defaultSearch}</SearchBar>
-        <Filters />
+        <SearchBar children={defaultSearch} fullList={fullList} setFilteredList={setFilteredList} activeFilters={activeFilters}></SearchBar>
+        <Filters activeFilters={activeFilters} setActiveFilters={setActiveFilters}/>
         <CharityList charities={filteredList} />
         </>
     );
