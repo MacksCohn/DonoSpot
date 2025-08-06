@@ -1,5 +1,6 @@
 // Max Cohn
 // editing.js
+(async () => {
 const { useState, useEffect } = React;
 
 // Get charity ID from URL
@@ -7,7 +8,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const cid = urlParams.get('cid') || "3ItNyesqTpHx1XbHNkSl"; // Default to American Red Cross if no ID
 const profile = firebase.doc(db, "charities", cid);
 const UID = localStorage.getItem('UID');
-let isOwner = urlParams.get('isOwner') || false; // bool
+let isOwner = (await loadProfile(profile)).OwnerUID === UID;
 
 //returns key value pairs - data.Name and data.Bio for now
 async function loadProfile() {
@@ -56,7 +57,7 @@ function Main() {
         setMode(prevMode => (prevMode === 'read' ? 'edit' : 'read'));
     }
 
-    if (isOwner)
+    if (isOwner === true)
         return(
             <div>
             <ModeButton mode={mode} onToggle={ToggleMode} /> 
@@ -192,3 +193,4 @@ headerRoot.render(<Header />);
 
 const mainRoot = ReactDOM.createRoot(document.getElementById('main'));
 mainRoot.render(<Main mode='edit'/>);
+})();
