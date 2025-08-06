@@ -38,7 +38,7 @@ function Login() {
             GetPageIdFromUser(user.uid)
             .then(page => {
                 if (page != null)
-                    window.location.href = `charity.html?cid=${page}&isOwner=true`;
+                    window.location.href = `charity.html?cid=${page}`;
                 else
                     console.log('should go to create page');
             });
