@@ -100,6 +100,8 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
 }
 
 function Filters({activeFilters, setActiveFilters}) {
+    const filters = ["Large", "Disaster"]; // Add more tags here if needed
+
     const toggleFilter = (filter) => {
         const updated = new Set(activeFilters);
         if (updated.has(filter)) {
@@ -107,14 +109,20 @@ function Filters({activeFilters, setActiveFilters}) {
         } else {
             updated.add(filter);
         }
-
-        setActiveFilters(updated);
+        setActiveFilters(new Set(updated)); // New Set to trigger React re-render
     };
 
     return (
         <div className="filters">
-            <button onClick={() => toggleFilter("Large")}>Large</button>
-            <button onClick={() => toggleFilter("Disaster")}>Disaster Relief</button>
+            {filters.map((filter) => (
+                <button
+                    key={filter}
+                    className={`filter-btn ${activeFilters.has(filter) ? "active" : ""}`}
+                    onClick={() => toggleFilter(filter)}
+                >
+                    {filter}
+                </button>
+            ))}
         </div>
     );
 }
