@@ -1,13 +1,30 @@
 const { useState, useEffect } = React;
+const { collection, getDocs } = window.firebase;
 
 // Charity data with their Firebase IDs
-const charitiesData = [
-    { id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
+let charitiesData = [
+    /*{ id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
     { id: "QWoT14rIl6RPePWoKMSo", name: "Feeding America", tags: "Large Disaster", description: "Feeding America is a nationwide network of food banks committed to fighting hunger." },
     { id: "S0fRydl6SutwHSg7Qqd6", name: "American Heart Association", tags: "Large", description: "Dedicated to fighting heart disease and stroke." },
     { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
-    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }
+    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }*/
 ];
+
+const db = window.db;
+async function fetchCharityList() {
+    const charityCollection = collection(db, "charities");
+    const charitySnapshot = await getDocs(charityCollection);
+    const charities = [];
+
+    charitySnapshot.forEach((doc) => {
+        const data = doc.data();
+        charities.push({id: doc.id, name: data.Name, tags: data.Categories, description: data.Bio});
+    });
+
+    return charities;
+}
+
+
 
 function CharityList() {
     return(
@@ -100,23 +117,26 @@ function Main() {
     );
 }
 
+fetchCharityList().then((charities) => {
+    charitiesData = charities;
 
-const headerRoot = ReactDOM.createRoot($('header')[0]);
-headerRoot.render(<Header />);
+    const headerRoot = ReactDOM.createRoot($("header")[0]);
+    headerRoot.render(<Header />);
 
-const mainRoot = ReactDOM.createRoot($('main')[0]);
-mainRoot.render(<Main />);
+    const mainRoot = ReactDOM.createRoot($("main")[0]);
+    mainRoot.render(<Main />);
 
-$('.filter-btn').each(button => {
-    button.addEventListener("click", () => {
-        const tag = button.dataset.filter;
-        if (activeFilters.has(tag)) {
-            activeFilters.delete(tag);
-            button.classList.remove("active");
-        } else {
-            activeFilters.add(tag);
-            button.classList.add("active");
-        }
-        filterCharities();
+    $(".filter-btn").each((button) => {
+        button.addEventListener("click", () => {
+            const tag = button.dataset.filter;
+            if (activeFilters.has(tag)) {
+                activeFilters.delete(tag);
+                button.classList.remove("active");
+            } else {
+                activeFilters.add(tag);
+                button.classList.add("active");
+            }
+            filterCharities();
+        });
     });
 });
