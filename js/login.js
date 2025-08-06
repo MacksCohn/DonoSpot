@@ -1,4 +1,5 @@
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = window.firebase;
+const { collection, getDocs } = window.firebase;
 
 function Main() {
     return(
@@ -34,7 +35,13 @@ function Login() {
         .then((userCredential) => {
             const user = userCredential.user;
             localStorage.setItem('UID', user);
-            window.location.href = 'index.html';
+            GetPageIdFromUser(user.uid)
+            .then(page => {
+                if (page != null)
+                    window.location.href = `charity.html?cid=${page}`;
+                else
+                    console.log('should go to create page');
+            });
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -58,6 +65,17 @@ function Signup() {
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
         });
+}
+
+// either returns id or null
+async function GetPageIdFromUser(user) {
+    let userPage = null;
+    const querySnapshot = await getDocs(collection(db, "charities"))
+    querySnapshot.forEach((doc) => {
+        if (doc.data()['OwnerUID'] === user)
+            userPage = doc.id;
+    });
+    return userPage;
 }
 
 // Test with
