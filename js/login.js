@@ -34,11 +34,11 @@ function Login() {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            localStorage.setItem('UID', user);
+            localStorage.setItem('UID', user.uid);
             GetPageIdFromUser(user.uid)
             .then(page => {
                 if (page != null)
-                    window.location.href = `charity.html?cid=${page}`;
+                    window.location.href = `charity.html?cid=${page}&isOwner=true`;
                 else
                     console.log('should go to create page');
             });
