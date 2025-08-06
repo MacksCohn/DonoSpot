@@ -346,3 +346,33 @@ input, textarea {
     animation-duration:200ms;
 }
 
+/* Login page styles */
+#main.login {
+    width: 400px;
+    margin: 10% auto;
+}
+
+#login-box {
+    width: 80%;
+    margin: auto auto;
+}
+
+label {
+    font-weight: bold;
+}
+
+#login-button-container {
+    text-align:center;
+    width: 100%;
+    height: 30px;
+}
+
+#login-button {
+    display: block;
+    float: left;
+}
+
+#signup-button {
+    display: block;
+    float: right;
+}
