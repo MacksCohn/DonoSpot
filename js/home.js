@@ -12,7 +12,7 @@ function Main() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const searchValue = event.target.elements.searchInput.value;
-        window.location.href = `/search.html?query=${encodeURIComponent(searchValue)}`;
+        window.location.href = `./search.html?query=${encodeURIComponent(searchValue)}`;
     }
     return (
         <>
