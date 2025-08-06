@@ -49,7 +49,10 @@ function Main() {
     );
 }
 
-localStorage.setItem('UID', null);
+if (localStorage.getItem('firstVisit') === null) {
+    localStorage.setItem('UID', null);
+    localStorage.setItem('firstVisit', false);
+}
 
 const headerRoot = ReactDOM.createRoot($('header')[0]);
 headerRoot.render(<Header />);
