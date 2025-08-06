@@ -123,7 +123,8 @@ function Header() {
 function Main() {
     const [fullList, setFullList] = useState([]);
     const [filteredList, setFilteredList] = useState([]);
-
+    const urlParams = new URLSearchParams(window.location.search);
+    const defaultSearch = urlParams.get('query');
     useEffect(() => {
         fetchCharityList().then(charities => {
             setFullList(charities);
@@ -132,7 +133,7 @@ function Main() {
     }, [])
     return(
         <>
-        <SearchBar fullList={fullList} setFilteredList={setFilteredList} />
+        <SearchBar fullList={fullList} setFilteredList={setFilteredList}>{defaultSearch}</SearchBar>
         <Filters />
         <CharityList charities={filteredList} />
         </>
