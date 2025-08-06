@@ -70,10 +70,11 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
         fullList.forEach((charity) => {
             const nameMatch = charity.name.toLowerCase().includes(query);
 
-            const tags =
-                typeof charity.tags === "string"
-                    ? charity.tags.toLowerCase().split(" ")
-                    : (charity.tags || []).map((t) => t.toLowerCase());
+            const tags = (charity.tags || "")
+                .split(",")
+                .map((section) => section.split(":")[1])
+                .filter(Boolean)
+                .map((tag) => tag.trim().toLowerCase());
 
             const matchesAllFilters =
                 activeFilters.size === 0 ||
