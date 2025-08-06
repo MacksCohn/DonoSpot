@@ -1,9 +1,11 @@
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = window.firebase;
 const { collection, getDocs, useState } = window.firebase;
+const urlParams = new URLSearchParams(window.location.search);
+let hereToCreate = urlParams.get('hereToCreate') || 'false'; // Default to American Red Cross if no ID
 
 function Main() {
     const { useState } = React;
-    const [creating, setCreating] = useState(false);
+    const [creating, setCreating] = useState(hereToCreate === 'true');
     const [text, setText] = useState('');
 
     const Signup = () => {
@@ -54,6 +56,7 @@ function Main() {
             <br/ ><br />
 
             <button type='button' onClick={CreateCharityPage}>Create Page</button>
+            <button type='button' onClick={() => window.location.href = 'index.html'}>Browse</button>
             </form>
             </div>
         );
@@ -74,15 +77,14 @@ function CreateCharityPage() {
     const user = localStorage.getItem('UID');
     const data = {
         Name: name,
-        Categories: "",
+        Categories: "Categories:",
         Bio: "",
         OwnerUID: user,
         donate: "",
     }
     addDoc(collection(db, 'charities'), data)
     .then(
-        data => console.log(data.id)
-        // data => window.location.href = `charity.html?cid=${data.id}`
+        data => window.location.href = `charity.html?cid=${data.id}`
     );
 }
 
@@ -99,7 +101,7 @@ function Login() {
                 if (page != null)
                     window.location.href = `charity.html?cid=${page}`;
                 else
-                    console.log('should go to create page');
+                    window.location.href = `login.html?hereToCreate=true`;
             });
         })
         .catch((error) => {

@@ -102,7 +102,7 @@ function PublishButton() {
         <button onClick={PublishChanges}>Publish Changes</button>
     );
 }
-
+ 
 function PublishChanges() {
     for (const id of editableIds) {
         const element = document.getElementById(id);
