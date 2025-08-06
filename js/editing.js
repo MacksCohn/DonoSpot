@@ -33,9 +33,8 @@ let editableIds = []
 function Header() {
     return(
         <>
-        <div className="logo">DONO<span className="heart">❤</span>SPOT</div>
-        <LoginButton text={'Login'}/>
-        <nav><a href="search.html">Home</a></nav>
+        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
+        <LoginButton />
         <br />
         </>
     );
@@ -103,7 +102,7 @@ function PublishButton() {
         <button onClick={PublishChanges}>Publish Changes</button>
     );
 }
-
+ 
 function PublishChanges() {
     for (const id of editableIds) {
         const element = document.getElementById(id);
@@ -180,12 +179,22 @@ function DonateButton({mode, children}) {
     );
 }
 
-function LoginButton({text}) {
-    return(
-        <a href='login.html'>
-            <button id='login'>{text}</button>
-        </a>
-    );
+function LoginButton() {
+    const Logout = () => {
+        localStorage.setItem('UID', 'null');
+        location.reload();
+    }
+
+    if (UID === 'null')
+        return(
+            <a href='login.html'>
+                <button id='login'>Login</button>
+            </a>
+        );
+    else
+        return(
+            <button id='login' onClick={Logout}>Log Out</button>
+        );
 }
 
 const headerRoot = ReactDOM.createRoot(document.getElementById('header'));
@@ -193,4 +202,4 @@ headerRoot.render(<Header />);
 
 const mainRoot = ReactDOM.createRoot(document.getElementById('main'));
 mainRoot.render(<Main mode='edit'/>);
-})();
+})()
