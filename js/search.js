@@ -27,10 +27,10 @@ async function fetchCharityList() {
 
 
 
-function CharityList() {
+function CharityList({charities}) {
     return(
         <ul className="charity-list">
-        {charitiesData.map(charity => (
+        {charities.map(charity => (
             <li key={charity.id} data-tags={charity.tags}>
             <a href={`charity.html?cid=${charity.id}`} className="charity-name">{charity.name}</a>
             <div className="charity-description">{charity.description}</div>
@@ -49,7 +49,7 @@ function filterCharities() {
     });
 }
 
-function SearchBar({children = ""}) {
+function SearchBar({children = "", fullList, setFilteredList}) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
@@ -57,23 +57,20 @@ function SearchBar({children = ""}) {
     }, [children]);
 
     useEffect(() => {
-        charitiesData.length = 0;
         const query = text.toLowerCase();
-        console.log(query);
-        fullList.forEach((charity) => {
-            if (charity.name.toLowerCase().includes(query)) {
-                charitiesData.push(charity);
-            }
-        });
+        const filtered = fullList.filter(charity => 
+            charity.name.toLowerCase().includes(query)
+        );
+        setFilteredList(filtered);
 
 
-    }, [text]);
+    }, [text, fullList]);
 
     return (
         <div className="search-bar">
-            <textarea value={text} onChange={(event) => {
+            <input value={text} onChange={(event) => {
                     setText(event.target.value);
-                }}></textarea>
+                }}></input>
             <button>🔍</button>
         </div>
     );
@@ -124,11 +121,20 @@ function Header() {
 }
 
 function Main() {
+    const [fullList, setFullList] = useState([]);
+    const [filteredList, setFilteredList] = useState([]);
+
+    useEffect(() => {
+        fetchCharityList().then(charities => {
+            setFullList(charities);
+            setFilteredList(charities);
+        });
+    }, [])
     return(
         <>
-        <SearchBar />
+        <SearchBar fullList={fullList} setFilteredList={setFilteredList} />
         <Filters />
-        <CharityList />
+        <CharityList charities={filteredList} />
         </>
     );
 }
