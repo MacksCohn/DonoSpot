@@ -6,8 +6,8 @@ const { useState, useEffect } = React;
 const urlParams = new URLSearchParams(window.location.search);
 const cid = urlParams.get('cid') || "3ItNyesqTpHx1XbHNkSl"; // Default to American Red Cross if no ID
 const profile = firebase.doc(db, "charities", cid);
-
-let editableIds = []
+const UID = localStorage.getItem('UID');
+let isOwner = urlParams.get('isOwner') || false; // bool
 
 //returns key value pairs - data.Name and data.Bio for now
 async function loadProfile() {
@@ -28,6 +28,7 @@ async function saveProfile(name, categories, bio){
     });
 }
 
+let editableIds = []
 function Header() {
     return(
         <>
@@ -55,18 +56,30 @@ function Main() {
         setMode(prevMode => (prevMode === 'read' ? 'edit' : 'read'));
     }
 
-    return(
-        <div>
-        <ModeButton mode={mode} onToggle={ToggleMode} /> 
-        <Editable id='Name' type='h1' mode={mode}>Loading...</Editable>
-        <Editable id='Categories' type='p' mode={mode}>Loading...</Editable>
-        <Editable id='Bio' type='p' mode={mode}>Loading...</Editable>
-        <DonateButton mode={mode}>{donateLink}</DonateButton>
-        <br /> 
-        <br/ >
-        <PublishButton />
-        </div>
-    );
+    if (isOwner)
+        return(
+            <div>
+            <ModeButton mode={mode} onToggle={ToggleMode} /> 
+            <Editable id='Name' type='h1' mode={mode}>Loading...</Editable>
+            <Editable id='Categories' type='p' mode={mode}>Loading...</Editable>
+            <Editable id='Bio' type='p' mode={mode}>Loading...</Editable>
+            <DonateButton mode={mode}>{donateLink}</DonateButton>
+            <br /> 
+            <br/ >
+            <PublishButton />
+            </div>
+        );
+    else
+        return(
+            <div>
+            <Editable id='Name' type='h1' mode={'read'}>Loading...</Editable>
+            <Editable id='Categories' type='p' mode={'read'}>Loading...</Editable>
+            <Editable id='Bio' type='p' mode={'read'}>Loading...</Editable>
+            <DonateButton mode={'read'}>{donateLink}</DonateButton>
+            <br /> 
+            <br/ >
+            </div>
+        );
 }
 
 
@@ -168,7 +181,9 @@ function DonateButton({mode, children}) {
 
 function LoginButton({text}) {
     return(
-        <button id='login'>{text}</button>
+        <a href='login.html'>
+            <button id='login'>{text}</button>
+        </a>
     );
 }
 
