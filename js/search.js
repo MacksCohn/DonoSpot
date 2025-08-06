@@ -9,6 +9,7 @@ let charitiesData = [
     { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
     { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }*/
 ];
+let fullList = [];
 
 const db = window.db;
 async function fetchCharityList() {
@@ -26,10 +27,10 @@ async function fetchCharityList() {
 
 
 
-function CharityList() {
+function CharityList({charities}) {
     return(
         <ul className="charity-list">
-        {charitiesData.map(charity => (
+        {charities.map(charity => (
             <li key={charity.id} data-tags={charity.tags}>
             <a href={`charity.html?cid=${charity.id}`} className="charity-name">{charity.name}</a>
             <div className="charity-description">{charity.description}</div>
@@ -48,17 +49,29 @@ function filterCharities() {
     });
 }
 
-function SearchBar({children}) {
+function SearchBar({children = "", fullList, setFilteredList}) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
         setText(children);
     }, [children]);
 
-    return(
+    useEffect(() => {
+        const query = text.toLowerCase();
+        const filtered = fullList.filter(charity => 
+            charity.name.toLowerCase().includes(query)
+        );
+        setFilteredList(filtered);
+
+
+    }, [text, fullList]);
+
+    return (
         <div className="search-bar">
-        <input type="text" value={text}></input>
-        <button>🔍</button>
+            <input value={text} onChange={(event) => {
+                    setText(event.target.value);
+                }}></input>
+            <button>🔍</button>
         </div>
     );
 }
@@ -108,18 +121,30 @@ function Header() {
 }
 
 function Main() {
+    const [fullList, setFullList] = useState([]);
+    const [filteredList, setFilteredList] = useState([]);
+    const urlParams = new URLSearchParams(window.location.search);
+    const defaultSearch = urlParams.get('query');
+    useEffect(() => {
+        fetchCharityList().then(charities => {
+            setFullList(charities);
+            setFilteredList(charities);
+        });
+    }, [])
     return(
         <>
-        <SearchBar />
+        <SearchBar fullList={fullList} setFilteredList={setFilteredList}>{defaultSearch}</SearchBar>
         <Filters />
-        <CharityList />
+        <CharityList charities={filteredList} />
         </>
     );
 }
 
 fetchCharityList().then((charities) => {
-    charitiesData = charities;
-
+    charities.forEach((charity) => {
+        charitiesData.push(charity);
+        fullList.push(charity);
+    });
     const headerRoot = ReactDOM.createRoot($("header")[0]);
     headerRoot.render(<Header />);
 

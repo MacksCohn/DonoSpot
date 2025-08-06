@@ -9,17 +9,33 @@ function Header() {
 }
 
 function Main() {
-    return(
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const searchValue = event.target.elements.searchInput.value;
+        window.location.href = `/DonoSpot/search.html?query=${encodeURIComponent(searchValue)}`;
+    }
+    return (
         <>
-            <h1>Dono<span className="heart">❤</span>Spot</h1>
+            <h1>
+                Dono<span className="heart">❤</span>Spot
+            </h1>
 
             <div className="search-bar">
-                <input type="text" placeholder="Search for a charity..."></input>
-                <button href='search.html'>🔍</button>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        name="searchInput"
+                        type="text"
+                        placeholder="Search for a charity..."
+                    ></input>
+                    <button type="submit">🔍</button>
+                </form>
             </div>
 
             <h2>Supporting charities made easy</h2>
-            <p>Discover and connect with charities that matter to you through our platform.</p>
+            <p>
+                Discover and connect with charities that matter to you through
+                our platform.
+            </p>
 
             <a href="search.html">Get Started</a>
 
