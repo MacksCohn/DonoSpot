@@ -49,6 +49,8 @@ function Main() {
     );
 }
 
+localStorage.setItem('UID', null);
+
 const headerRoot = ReactDOM.createRoot($('header')[0]);
 headerRoot.render(<Header />);
 
