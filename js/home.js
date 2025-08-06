@@ -37,7 +37,7 @@ function Main() {
                 our platform.
             </p>
 
-            <a href="search.html">Get Started</a>
+            <a href="search.html?query=">Get Started</a>
 
             <h3>Features</h3>
             <ul>
