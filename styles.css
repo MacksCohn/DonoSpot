@@ -264,7 +264,13 @@ main button:hover {
 #main button:hover {
     background-color: #dc2626;
 }
+#main button.active {
+    background-color: #a71d1d;
+}
 
+#main button.active:hover {
+    background-color: #7c1616;
+}
 /* Charity section in search.html */
 body > div:last-child {
     background-color: white;
