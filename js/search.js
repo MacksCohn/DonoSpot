@@ -1,33 +1,15 @@
 const { useState, useEffect } = React;
-const { collection, getDocs } = window.firebase;
 
 // Charity data with their Firebase IDs
-let charitiesData = [
-    /*{ id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
+const initialCharitiesData = [
+    { id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
     { id: "QWoT14rIl6RPePWoKMSo", name: "Feeding America", tags: "Large Disaster", description: "Feeding America is a nationwide network of food banks committed to fighting hunger." },
     { id: "S0fRydl6SutwHSg7Qqd6", name: "American Heart Association", tags: "Large", description: "Dedicated to fighting heart disease and stroke." },
     { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
-    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }*/
+    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }
 ];
-let fullList = [];
 
-const db = window.db;
-async function fetchCharityList() {
-    const charityCollection = collection(db, "charities");
-    const charitySnapshot = await getDocs(charityCollection);
-    const charities = [];
-
-    charitySnapshot.forEach((doc) => {
-        const data = doc.data();
-        charities.push({id: doc.id, name: data.Name, tags: data.Categories, description: data.Bio});
-    });
-
-    return charities;
-}
-
-
-
-function CharityList({charities}) {
+function CharityList({ charities }) {
     return(
         <ul className="charity-list">
         {charities.map(charity => (
@@ -40,76 +22,51 @@ function CharityList({charities}) {
     );
 }
 
-function filterCharities() {
-    charities.forEach(charity => {
-        const tags = charity.dataset.tags.split(" ");
-        const matches = [...activeFilters].every(f => tags.includes(f));
-        const shouldShow = activeFilters.size === 0 || matches;
-        charity.style.display = shouldShow ? "list-item" : "none";
-    });
-}
-
-function SearchBar({children = "", fullList, setFilteredList}) {
+function SearchBar({ children }) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
         setText(children);
     }, [children]);
 
-    useEffect(() => {
-        const query = text.toLowerCase();
-        const filtered = fullList.filter(charity => 
-            charity.name.toLowerCase().includes(query)
-        );
-        setFilteredList(filtered);
-
-
-    }, [text, fullList]);
-
-    return (
+    return(
         <div className="search-bar">
-            <input value={text} onChange={(event) => {
-                    setText(event.target.value);
-                }}></input>
-            <button>🔍</button>
+        <input type="text" value={text} onChange={(e) => setText(e.target.value)}></input>
+        <button>🔍</button>
         </div>
     );
 }
 
-function Filters() {
+function Filters({ activeFilters, setActiveFilters }) {
+    const toggleFilter = (filter) => {
+        setActiveFilters(prev => {
+            const newFilters = new Set(prev);
+            if (newFilters.has(filter)) {
+                newFilters.delete(filter);
+            } else {
+                newFilters.add(filter);
+            }
+            return newFilters;
+        });
+    };
+
     return(
         <div className="filters">
-        <button className="filter-btn" data-filter="Large">Large</button>
-        <button className="filter-btn" data-filter="Disaster">Disaster Relief</button>
+            <button 
+                className={`filter-btn ${activeFilters.has('Large') ? 'active' : ''}`} 
+                onClick={() => toggleFilter('Large')}
+            >
+                Large
+            </button>
+            <button 
+                className={`filter-btn ${activeFilters.has('Disaster') ? 'active' : ''}`} 
+                onClick={() => toggleFilter('Disaster')}
+            >
+                Disaster Relief
+            </button>
         </div>
     );
 }
-
-// function CharityList() {
-//  return(
-//      <ul className="charity-list">
-//          <li data-tags="Large Disaster">
-//          <a href="charity.html" className="charity-name">American Red Cross</a>
-//          </li>
-//          <li data-tags="Large Disaster">
-//          <span className="charity-name">Feeding America</span>
-//          <div className="charity-description">Feeding America is a nationwide network of food banks committed to fighting hunger.</div>
-//          </li>
-//          <li data-tags="Large">
-//          <span className="charity-name">American Heart Association</span>
-//          <div className="charity-description">Dedicated to fighting heart disease and stroke.</div>
-//          </li>
-//          <li data-tags="">
-//          <span className="charity-name">Challenge Americas</span>
-//          <div className="charity-description">Supports wounded veterans through music therapy and arts.</div>
-//          </li>
-//          <li data-tags="Large Disaster">
-//          <span className="charity-name">Americare</span>
-//          <div className="charity-description">Provides health and disaster relief globally.</div>
-//          </li>
-//      </ul>
-//  );
-//}
 
 function Header() {
     return(
@@ -121,47 +78,38 @@ function Header() {
 }
 
 function Main() {
-    const [fullList, setFullList] = useState([]);
-    const [filteredList, setFilteredList] = useState([]);
-    const urlParams = new URLSearchParams(window.location.search);
-    const defaultSearch = urlParams.get('query');
-    useEffect(() => {
-        fetchCharityList().then(charities => {
-            setFullList(charities);
-            setFilteredList(charities);
-        });
-    }, [])
+    const [charities, setCharities] = useState(initialCharitiesData);
+    const [activeFilters, setActiveFilters] = useState(new Set());
+    const [searchText, setSearchText] = useState('');
+
+    // Filter charities based on active filters and search text
+    const filteredCharities = charities.filter(charity => {
+        // Split tags into array (handle empty tags)
+        const tags = charity.tags ? charity.tags.split(' ') : [];
+        
+        // Filter by active tags
+        const matchesFilters = activeFilters.size === 0 || 
+            [...activeFilters].every(filter => tags.includes(filter));
+        
+        // Filter by search text
+        const matchesSearch = charity.name.toLowerCase().includes(searchText.toLowerCase()) || 
+                             charity.description.toLowerCase().includes(searchText.toLowerCase());
+        
+        return matchesFilters && matchesSearch;
+    });
+
     return(
         <>
-        <SearchBar fullList={fullList} setFilteredList={setFilteredList}>{defaultSearch}</SearchBar>
-        <Filters />
-        <CharityList charities={filteredList} />
+        <SearchBar>{searchText}</SearchBar>
+        <Filters activeFilters={activeFilters} setActiveFilters={setActiveFilters} />
+        <CharityList charities={filteredCharities} />
         </>
     );
 }
 
-fetchCharityList().then((charities) => {
-    charities.forEach((charity) => {
-        charitiesData.push(charity);
-        fullList.push(charity);
-    });
-    const headerRoot = ReactDOM.createRoot($("header")[0]);
-    headerRoot.render(<Header />);
+// Render the app
+const headerRoot = ReactDOM.createRoot(document.querySelector('header'));
+headerRoot.render(<Header />);
 
-    const mainRoot = ReactDOM.createRoot($("main")[0]);
-    mainRoot.render(<Main />);
-
-    $(".filter-btn").each((button) => {
-        button.addEventListener("click", () => {
-            const tag = button.dataset.filter;
-            if (activeFilters.has(tag)) {
-                activeFilters.delete(tag);
-                button.classList.remove("active");
-            } else {
-                activeFilters.add(tag);
-                button.classList.add("active");
-            }
-            filterCharities();
-        });
-    });
-});
+const mainRoot = ReactDOM.createRoot(document.querySelector('main'));
+mainRoot.render(<Main />);
