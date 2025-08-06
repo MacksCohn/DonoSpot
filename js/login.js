@@ -1,21 +1,62 @@
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = window.firebase;
-const { collection, getDocs } = window.firebase;
+const { collection, getDocs, useState } = window.firebase;
 
 function Main() {
-    return(
-        <div id='login-box'>
-        <h1>Login to DonoSpot</h1>
-        <form>
-        <label>Email:</label><br />
-        <input type="email" id="email" /><br/ ><br />
+    const { useState } = React;
+    const [creating, setCreating] = useState(false);
+    const [text, setText] = useState('');
 
-        <label>Password:</label><br />
-        <input type="password" id="password" /><br /><br />
+    const Signup = () => {
+        const email = $('#email').val();
+        const password = $('#password').val();
+        console.log(email, password);
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                localStorage.setItem('UID', user);
+                setCreating(true);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage);
+            });
+    }
+    
+    if (!creating)
+        return(
+            <div id='login-box'>
+            <h1>Login to DonoSpot</h1>
+            <form>
+            <label>Email</label><br />
+            <input type="email" id="email" /><br/ ><br />
 
-        <LoginButtons loginFunction={Login} signupFunction={Signup}/>
-        </form>
-        </div>
-    );
+            <label>Password</label><br />
+            <input type="password" id="password" /><br /><br />
+
+            <LoginButtons loginFunction={Login} signupFunction={Signup}/>
+            </form>
+            </div>
+        );
+    else
+        return(
+            <div id='login-box'>
+            <h1>Create Charity</h1>
+            <form>
+            <label>Charity Name</label><br />
+            <input 
+                type='text'
+                id='name' 
+                value={text}
+                placeholder='Charity Name'
+                onChange={(event) => setText(event.target.value)}
+            />
+            <br/ ><br />
+
+            <button type='button' onClick={CreateCharityPage}>Create Page</button>
+            </form>
+            </div>
+        );
 }
 
 function LoginButtons( {loginFunction, signupFunction} ) {
@@ -24,6 +65,24 @@ function LoginButtons( {loginFunction, signupFunction} ) {
         <button id='login-button' type="button" onClick={loginFunction}>Login</button>
         <button id='signup-button' type="button" onClick={signupFunction}>Signup</button>
         </div>
+    );
+}
+
+function CreateCharityPage() {
+    const { collection, addDoc } = window.firebase;
+    const name = $('#name').val();
+    const user = localStorage.getItem('UID');
+    const data = {
+        Name: name,
+        Categories: "",
+        Bio: "",
+        OwnerUID: user,
+        donate: "",
+    }
+    addDoc(collection(db, 'charities'), data)
+    .then(
+        data => console.log(data.id)
+        // data => window.location.href = `charity.html?cid=${data.id}`
     );
 }
 
@@ -50,22 +109,6 @@ function Login() {
         });
 }
 
-function Signup() {
-    const email = $('#email').val();
-    const password = $('#password').val();
-    console.log(email, password);
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            localStorage.setItem('UID', user);
-            window.location.href = 'index.html';
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-        });
-}
 
 // either returns id or null
 async function GetPageIdFromUser(user) {
