@@ -9,6 +9,7 @@ let charitiesData = [
     { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
     { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }*/
 ];
+let fullList = [];
 
 const db = window.db;
 async function fetchCharityList() {
@@ -48,17 +49,32 @@ function filterCharities() {
     });
 }
 
-function SearchBar({children}) {
+function SearchBar({children = ""}) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
         setText(children);
     }, [children]);
 
-    return(
+    useEffect(() => {
+        charitiesData.length = 0;
+        const query = text.toLowerCase();
+        console.log(query);
+        fullList.forEach((charity) => {
+            if (charity.name.toLowerCase().includes(query)) {
+                charitiesData.push(charity);
+            }
+        });
+
+
+    }, [text]);
+
+    return (
         <div className="search-bar">
-        <input type="text" value={text}></input>
-        <button>🔍</button>
+            <textarea value={text} onChange={(event) => {
+                    setText(event.target.value);
+                }}></textarea>
+            <button>🔍</button>
         </div>
     );
 }
@@ -118,8 +134,10 @@ function Main() {
 }
 
 fetchCharityList().then((charities) => {
-    charitiesData = charities;
-
+    charities.forEach((charity) => {
+        charitiesData.push(charity);
+        fullList.push(charity);
+    });
     const headerRoot = ReactDOM.createRoot($("header")[0]);
     headerRoot.render(<Header />);
 
