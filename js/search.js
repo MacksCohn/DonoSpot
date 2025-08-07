@@ -50,7 +50,7 @@ function filterCharities() {
     });
 }
 
-function SearchBar({children = "", fullList, setFilteredList}) {
+function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
@@ -58,14 +58,34 @@ function SearchBar({children = "", fullList, setFilteredList}) {
     }, [children]);
 
     useEffect(() => {
-        const query = text.toLowerCase();
+        /*const query = text.toLowerCase();
         const filtered = fullList.filter(charity => 
             charity.name.toLowerCase().includes(query)
-        );
+        );*/
+        const filtered = [];
+        const query = text.toLowerCase();
+        fullList.forEach((charity) => {
+            const nameMatch = charity.name.toLowerCase().includes(query);
+
+            const tags = (charity.tags || "")
+                .split(",")
+                .map((section) => section.split(":")[1])
+                .filter(Boolean)
+                .map((tag) => tag.trim().toLowerCase());
+
+            const matchesAllFilters =
+                activeFilters.size === 0 ||
+                [...activeFilters].every((filter) =>
+                    tags.includes(filter.toLowerCase())
+                );
+
+            if (nameMatch && matchesAllFilters) {
+                filtered.push(charity);
+            }
+        });
+
         setFilteredList(filtered);
-
-
-    }, [text, fullList]);
+    }, [text, fullList, activeFilters]);
 
     return (
         <div className="search-bar">
@@ -77,11 +97,30 @@ function SearchBar({children = "", fullList, setFilteredList}) {
     );
 }
 
-function Filters() {
-    return(
+function Filters({activeFilters, setActiveFilters}) {
+    const filters = ["Large", "Disaster Relief"]; // Add more tags here if needed
+
+    const toggleFilter = (filter) => {
+        const updated = new Set(activeFilters);
+        if (updated.has(filter)) {
+            updated.delete(filter);
+        } else {
+            updated.add(filter);
+        }
+        setActiveFilters(new Set(updated)); // New Set to trigger React re-render
+    };
+
+    return (
         <div className="filters">
-        <button className="filter-btn" data-filter="Large">Large</button>
-        <button className="filter-btn" data-filter="Disaster">Disaster Relief</button>
+            {filters.map((filter) => (
+                <button
+                    key={filter}
+                    className={`filter-btn ${activeFilters.has(filter) ? "active" : ""}`}
+                    onClick={() => toggleFilter(filter)}
+                >
+                    {filter}
+                </button>
+            ))}
         </div>
     );
 }
@@ -144,6 +183,7 @@ function LoginButton() {
 function Main() {
     const [fullList, setFullList] = useState([]);
     const [filteredList, setFilteredList] = useState([]);
+    const [activeFilters, setActiveFilters] = useState(new Set());
     const urlParams = new URLSearchParams(window.location.search);
     const defaultSearch = urlParams.get('query');
     useEffect(() => {
@@ -154,8 +194,8 @@ function Main() {
     }, [])
     return(
         <>
-        <SearchBar fullList={fullList} setFilteredList={setFilteredList}>{defaultSearch}</SearchBar>
-        <Filters />
+        <SearchBar children={defaultSearch} fullList={fullList} setFilteredList={setFilteredList} activeFilters={activeFilters}></SearchBar>
+        <Filters activeFilters={activeFilters} setActiveFilters={setActiveFilters}/>
         <CharityList charities={filteredList} />
         </>
     );
@@ -172,17 +212,5 @@ fetchCharityList().then((charities) => {
     const mainRoot = ReactDOM.createRoot($("main")[0]);
     mainRoot.render(<Main />);
 
-    $(".filter-btn").each((button) => {
-        button.addEventListener("click", () => {
-            const tag = button.dataset.filter;
-            if (activeFilters.has(tag)) {
-                activeFilters.delete(tag);
-                button.classList.remove("active");
-            } else {
-                activeFilters.add(tag);
-                button.classList.add("active");
-            }
-            filterCharities();
-        });
-    });
+
 });
