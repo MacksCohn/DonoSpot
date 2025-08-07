@@ -15,7 +15,8 @@ function Main() {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                localStorage.setItem('UID', user);
+                console.log(user, user.uid);
+                localStorage.setItem('UID', user.uid);
                 setCreating(true);
             })
             .catch((error) => {
