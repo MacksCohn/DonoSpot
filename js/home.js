@@ -1,11 +1,31 @@
+const UID = localStorage.getItem('UID');
+
 function Header() {
     return(
         <>
-            <div className="logo">DONO<span className="heart">❤</span>SPOT</div>
-            <nav><a href="index.html">Home</a></nav>
-            <div className="profile-icon">👤</div>
+        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
+        <LoginButton />
+        <br />
         </>
     );
+}
+
+function LoginButton() {
+    const Logout = () => {
+        localStorage.setItem('UID', 'null');
+        location.reload();
+    }
+
+    if (UID === 'null')
+        return(
+            <a href='login.html'>
+                <button id='login'>Login</button>
+            </a>
+        );
+    else
+        return(
+            <button id='login' onClick={Logout}>Log Out</button>
+        );
 }
 
 function Main() {
@@ -37,7 +57,7 @@ function Main() {
                 our platform.
             </p>
 
-            <a href="search.html">Get Started</a>
+            <a href="search.html?query=">Get Started</a>
 
             <h3>Features</h3>
             <ul>
@@ -47,6 +67,11 @@ function Main() {
             </ul>
         </>
     );
+}
+
+if (localStorage.getItem('firstVisit') === null) {
+    localStorage.setItem('UID', null);
+    localStorage.setItem('firstVisit', false);
 }
 
 const headerRoot = ReactDOM.createRoot($('header')[0]);
