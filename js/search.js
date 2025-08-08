@@ -1,4 +1,6 @@
 const { useState, useEffect } = React;
+const { collection, getDocs } = window.firebase;
+const UID = localStorage.getItem('UID');
 
 // Charity data with their Firebase IDs
 const initialCharitiesData = [
@@ -22,14 +24,53 @@ function CharityList({ charities }) {
     );
 }
 
-function SearchBar({ children }) {
+function filterCharities() {
+    charities.forEach(charity => {
+        const tags = charity.dataset.tags.split(" ");
+        const matches = [...activeFilters].every(f => tags.includes(f));
+        const shouldShow = activeFilters.size === 0 || matches;
+        charity.style.display = shouldShow ? "list-item" : "none";
+    });
+}
+
+function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
     const [text, setText] = useState(children);
 
     useEffect(() => {
         setText(children);
     }, [children]);
 
-    return(
+    useEffect(() => {
+        /*const query = text.toLowerCase();
+        const filtered = fullList.filter(charity => 
+            charity.name.toLowerCase().includes(query)
+        );*/
+        const filtered = [];
+        const query = text.toLowerCase();
+        fullList.forEach((charity) => {
+            const nameMatch = charity.name.toLowerCase().includes(query);
+
+            const tags = (charity.tags || "")
+                .split(",")
+                .map((section) => section.split(":")[1])
+                .filter(Boolean)
+                .map((tag) => tag.trim().toLowerCase());
+
+            const matchesAllFilters =
+                activeFilters.size === 0 ||
+                [...activeFilters].every((filter) =>
+                    tags.includes(filter.toLowerCase())
+                );
+
+            if (nameMatch && matchesAllFilters) {
+                filtered.push(charity);
+            }
+        });
+
+        setFilteredList(filtered);
+    }, [text, fullList, activeFilters]);
+
+    return (
         <div className="search-bar">
         <input type="text" value={text} onChange={(e) => setText(e.target.value)}></input>
         <button>🔍</button>
@@ -37,33 +78,30 @@ function SearchBar({ children }) {
     );
 }
 
-function Filters({ activeFilters, setActiveFilters }) {
+function Filters({activeFilters, setActiveFilters}) {
+    const filters = ["Large", "Disaster Relief"]; // Add more tags here if needed
+
     const toggleFilter = (filter) => {
-        setActiveFilters(prev => {
-            const newFilters = new Set(prev);
-            if (newFilters.has(filter)) {
-                newFilters.delete(filter);
-            } else {
-                newFilters.add(filter);
-            }
-            return newFilters;
-        });
+        const updated = new Set(activeFilters);
+        if (updated.has(filter)) {
+            updated.delete(filter);
+        } else {
+            updated.add(filter);
+        }
+        setActiveFilters(new Set(updated)); // New Set to trigger React re-render
     };
 
-    return(
+    return (
         <div className="filters">
-            <button 
-                className={`filter-btn ${activeFilters.has('Large') ? 'active' : ''}`} 
-                onClick={() => toggleFilter('Large')}
-            >
-                Large
-            </button>
-            <button 
-                className={`filter-btn ${activeFilters.has('Disaster') ? 'active' : ''}`} 
-                onClick={() => toggleFilter('Disaster')}
-            >
-                Disaster Relief
-            </button>
+            {filters.map((filter) => (
+                <button
+                    key={filter}
+                    className={`filter-btn ${activeFilters.has(filter) ? "active" : ""}`}
+                    onClick={() => toggleFilter(filter)}
+                >
+                    {filter}
+                </button>
+            ))}
         </div>
     );
 }
@@ -71,38 +109,49 @@ function Filters({ activeFilters, setActiveFilters }) {
 function Header() {
     return(
         <>
-        <div className="logo">DONO<span className="heart">❤</span>SPOT</div>
-        <nav><a href="index.html">Home</a></nav>
+        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
+        <LoginButton />
+        <br />
         </>
     );
 }
 
+function LoginButton() {
+    const Logout = () => {
+        localStorage.setItem('UID', 'null');
+        location.reload();
+    }
+
+    if (UID === 'null')
+        return(
+            <a href='login.html'>
+                <button id='login'>Login</button>
+            </a>
+        );
+    else
+        return(
+            <button id='login' onClick={Logout}>Log Out</button>
+        );
+}
+
+
 function Main() {
-    const [charities, setCharities] = useState(initialCharitiesData);
+    const [fullList, setFullList] = useState([]);
+    const [filteredList, setFilteredList] = useState([]);
     const [activeFilters, setActiveFilters] = useState(new Set());
-    const [searchText, setSearchText] = useState('');
-
-    // Filter charities based on active filters and search text
-    const filteredCharities = charities.filter(charity => {
-        // Split tags into array (handle empty tags)
-        const tags = charity.tags ? charity.tags.split(' ') : [];
-        
-        // Filter by active tags
-        const matchesFilters = activeFilters.size === 0 || 
-            [...activeFilters].every(filter => tags.includes(filter));
-        
-        // Filter by search text
-        const matchesSearch = charity.name.toLowerCase().includes(searchText.toLowerCase()) || 
-                             charity.description.toLowerCase().includes(searchText.toLowerCase());
-        
-        return matchesFilters && matchesSearch;
-    });
-
+    const urlParams = new URLSearchParams(window.location.search);
+    const defaultSearch = urlParams.get('query');
+    useEffect(() => {
+        fetchCharityList().then(charities => {
+            setFullList(charities);
+            setFilteredList(charities);
+        });
+    }, [])
     return(
         <>
-        <SearchBar>{searchText}</SearchBar>
-        <Filters activeFilters={activeFilters} setActiveFilters={setActiveFilters} />
-        <CharityList charities={filteredCharities} />
+        <SearchBar children={defaultSearch} fullList={fullList} setFilteredList={setFilteredList} activeFilters={activeFilters}></SearchBar>
+        <Filters activeFilters={activeFilters} setActiveFilters={setActiveFilters}/>
+        <CharityList charities={filteredList} />
         </>
     );
 }
@@ -111,5 +160,8 @@ function Main() {
 const headerRoot = ReactDOM.createRoot(document.querySelector('header'));
 headerRoot.render(<Header />);
 
-const mainRoot = ReactDOM.createRoot(document.querySelector('main'));
-mainRoot.render(<Main />);
+    const mainRoot = ReactDOM.createRoot($("main")[0]);
+    mainRoot.render(<Main />);
+
+
+});

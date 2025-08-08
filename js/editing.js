@@ -40,6 +40,24 @@ function Header() {
     );
 }
 
+function LoginButton() {
+    const Logout = () => {
+        localStorage.setItem('UID', 'null');
+        location.reload();
+    }
+
+    if (UID === 'null')
+        return(
+            <a href='login.html'>
+                <button id='login'>Login</button>
+            </a>
+        );
+    else
+        return(
+            <button id='login' onClick={Logout}>Log Out</button>
+        );
+}
+
 function Main() {
     const [mode, setMode] = useState('read');
     const [donateLink, setDonateLink] = useState('');
@@ -177,24 +195,6 @@ function DonateButton({mode, children}) {
         <Editable id='donate' mode={mode} type='button'>{children}</Editable>
         </>
     );
-}
-
-function LoginButton() {
-    const Logout = () => {
-        localStorage.setItem('UID', 'null');
-        location.reload();
-    }
-
-    if (UID === 'null')
-        return(
-            <a href='login.html'>
-                <button id='login'>Login</button>
-            </a>
-        );
-    else
-        return(
-            <button id='login' onClick={Logout}>Log Out</button>
-        );
 }
 
 const headerRoot = ReactDOM.createRoot(document.getElementById('header'));
