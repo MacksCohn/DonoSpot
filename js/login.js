@@ -100,9 +100,8 @@ function Login() {
                 });
         })
         .catch((error) => {
-            const errorCode = error.code;
             const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
+            $('#error-messages').text(errorMessage.substring(errorMessage.indexOf(':')+1), '<br />');
         });
 }
 
