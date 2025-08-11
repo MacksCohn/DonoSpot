@@ -590,6 +590,6 @@ p.filter-title {
     border-radius: 4px;
 }
 
-label.error {
+label.error, span.error {
     color:#DD0000;
 }

@@ -36,6 +36,8 @@ class LoginForm extends Component {
                 <input type="password" id="password" name='password' />
                 <br /><br />
                 <LoginButtons loginFunction={Login} signupFunction={Signup}/>
+                <br />
+                <span id='error-messages' className='error'></span>
             </form>
         );
     }   
