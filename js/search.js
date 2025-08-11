@@ -52,7 +52,7 @@ function filterCharities() {
 
 function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
     const [text, setText] = useState(children);
-
+    const [count, setCount] = useState(0)
     useEffect(() => {
         setText(children);
     }, [children]);
@@ -83,7 +83,8 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
                 filtered.push(charity);
             }
         });
-
+        
+        setCount(filtered.length);
         setFilteredList(filtered);
     }, [text, fullList, activeFilters]);
 
@@ -93,6 +94,7 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
                     setText(event.target.value);
                 }}></input>
             <button>🔍</button>
+            <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
         </div>
     );
 }
@@ -112,6 +114,7 @@ function Filters({activeFilters, setActiveFilters}) {
 
     return (
         <div className="filters">
+            <p className="filter-title">Filter by Category</p>
             {filters.map((filter) => (
                 <button
                     key={filter}
