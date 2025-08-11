@@ -4,8 +4,8 @@
 const { useState, useEffect } = React;
 
 // Get charity ID from URL
-const urlParams = new URLSearchParams(window.location.search);  // Default to American Red Cross if no ID
-const cid = urlParams.get('cid') || "3ItNyesqTpHx1XbHNkSl";
+const urlParams = new URLSearchParams(window.location.search);
+const cid = urlParams.get('cid') || "3ItNyesqTpHx1XbHNkSl";   // Default to American Red Cross if no ID
 const profile = firebase.doc(db, "charities", cid);
 const UID = localStorage.getItem('UID');
 let isOwner = (await loadProfile(profile)).OwnerUID === UID;
