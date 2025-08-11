@@ -4,21 +4,23 @@
 const { useState, useEffect } = React;
 
 // Get charity ID from URL
-const urlParams = new URLSearchParams(window.location.search);
+const urlParams = new URLSearchParams(window.location.search);  // Default to American Red Cross if no ID
 const cid = urlParams.get('cid') || "3ItNyesqTpHx1XbHNkSl";
 const profile = firebase.doc(db, "charities", cid);
 const UID = localStorage.getItem('UID');
 let isOwner = (await loadProfile(profile)).OwnerUID === UID;
 
+//returns key value pairs - data.Name and data.Bio for now
 async function loadProfile() {
     const snap = await firebase.getDoc(profile);
     if (snap.exists()) {
         const data = snap.data();
         return data;
     }
-    return {};
+    return {};  // Return empty object if no data
 }
 
+//capital = db, lowecase = local
 async function saveProfile(name, categories, bio, imageUrls) {
     await firebase.setDoc(profile, {
         Name: name,
