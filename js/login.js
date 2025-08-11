@@ -1,44 +1,38 @@
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = window.firebase;
 const { collection, getDocs, useState } = window.firebase;
 const urlParams = new URLSearchParams(window.location.search);
+const { LoginForm } = window.loginForm;
 let hereToCreate = urlParams.get('hereToCreate') || 'false'; // Default to American Red Cross if no ID
+
+const Signup = () => {
+    const email = $('#email').val();
+    const password = $('#password').val();
+    console.log(email, password);
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user, user.u.idid);
+            localStorage.setItem('UID', user.uid);
+            setCreating(true);
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+}
 
 function Main() {
     const { useState } = React;
     const [creating, setCreating] = useState(hereToCreate === 'true');
     const [text, setText] = useState('');
 
-    const Signup = () => {
-        const email = $('#email').val();
-        const password = $('#password').val();
-        console.log(email, password);
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user, user.uid);
-                localStorage.setItem('UID', user.uid);
-                setCreating(true);
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage);
-            });
-    }
-    
+
     if (!creating)
         return(
             <div id='login-box'>
             <h1>Login to DonoSpot</h1>
-            <form>
-            <label>Email</label><br />
-            <input type="email" id="email" /><br/ ><br />
-
-            <label>Password</label><br />
-            <input type="password" id="password" /><br /><br />
-
-            <LoginButtons loginFunction={Login} signupFunction={Signup}/>
-            </form>
+            <LoginForm />
             </div>
         );
     else
@@ -48,11 +42,11 @@ function Main() {
             <form>
             <label>Charity Name</label><br />
             <input 
-                type='text'
-                id='name' 
-                value={text}
-                placeholder='Charity Name'
-                onChange={(event) => setText(event.target.value)}
+            type='text'
+            id='name' 
+            value={text}
+            placeholder='Charity Name'
+            onChange={(event) => setText(event.target.value)}
             />
             <br/ ><br />
 
@@ -84,9 +78,9 @@ function CreateCharityPage() {
         donate: "",
     }
     addDoc(collection(db, 'charities'), data)
-    .then(
-        data => window.location.href = `charity.html?cid=${data.id}`
-    );
+        .then(
+            data => window.location.href = `charity.html?cid=${data.id}`
+        );
 }
 
 function Login() {
@@ -98,12 +92,12 @@ function Login() {
             const user = userCredential.user;
             localStorage.setItem('UID', user.uid);
             GetPageIdFromUser(user.uid)
-            .then(page => {
-                if (page != null)
-                    window.location.href = `charity.html?cid=${page}`;
-                else
-                    window.location.href = `login.html?hereToCreate=true`;
-            });
+                .then(page => {
+                    if (page != null)
+                        window.location.href = `charity.html?cid=${page}`;
+                    else
+                        window.location.href = `login.html?hereToCreate=true`;
+                });
         })
         .catch((error) => {
             const errorCode = error.code;
