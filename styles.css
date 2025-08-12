@@ -170,8 +170,6 @@ main button:hover {
     flex-wrap: wrap;
 }
 
-<<<<<<< HEAD
-=======
 #main button.filter-btn {
     /*padding: 0.5rem 1.25rem;*/
     background-color: white ;
@@ -198,7 +196,6 @@ main button:hover {
 }
 
 
->>>>>>> 3821822c2163850ef01d90ee31162277a70ec79c
 .charity-list {
     list-style: none;
     padding: 0;
@@ -408,32 +405,6 @@ label {
     float: right;
 }
 
-<<<<<<< HEAD
-
-button.filter-btn {
-    all: unset;
-    padding: 0.5rem 1.25rem;
-    background: none;
-    color: #ef4444;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    border-radius: 20px;
-    border: 1px solid #ef4444;
-}
-
-button.filter-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-}
-
-button.filter-btn.active {
-    color: white !important;
-    background: #b91c1c !important;
-    border-color: #b91c1c !important;
-    font-weight: 600;
-}
-=======
 p.filter-title {
     font-size: small !important;
     display: block;
@@ -622,4 +593,3 @@ p.filter-title {
 label.error, span.error {
     color:#DD0000;
 }
->>>>>>> 3821822c2163850ef01d90ee31162277a70ec79c

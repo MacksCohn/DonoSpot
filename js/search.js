@@ -4,15 +4,32 @@ const UID = localStorage.getItem('UID');
 const { Header } = window.headerFile;
 
 // Charity data with their Firebase IDs
-const initialCharitiesData = [
-    { id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
+let charitiesData = [
+    /*{ id: "3ItNyesqTpHx1XbHNkSl", name: "American Red Cross", tags: "Large Disaster", description: "Provides emergency assistance, disaster relief, and education in the United States." },
     { id: "QWoT14rIl6RPePWoKMSo", name: "Feeding America", tags: "Large Disaster", description: "Feeding America is a nationwide network of food banks committed to fighting hunger." },
     { id: "S0fRydl6SutwHSg7Qqd6", name: "American Heart Association", tags: "Large", description: "Dedicated to fighting heart disease and stroke." },
     { id: "vkRTzeDqkZcxu6qcAoHM", name: "Challenge Americas", tags: "", description: "Supports wounded veterans through music therapy and arts." },
-    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }
+    { id: "wxxxmoIeAPQwFSEuhFpj", name: "Americare", tags: "Large Disaster", description: "Provides health and disaster relief globally." }*/
 ];
+let fullList = [];
 
-function CharityList({ charities }) {
+const db = window.db;
+async function fetchCharityList() {
+    const charityCollection = collection(db, "charities");
+    const charitySnapshot = await getDocs(charityCollection);
+    const charities = [];
+
+    charitySnapshot.forEach((doc) => {
+        const data = doc.data();
+        charities.push({id: doc.id, name: data.Name, tags: data.Categories, description: data.Bio});
+    });
+
+    return charities;
+}
+
+
+
+function CharityList({charities}) {
     return(
         <ul className="charity-list">
         {charities.map(charity => (
@@ -74,16 +91,11 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
 
     return (
         <div className="search-bar">
-<<<<<<< HEAD
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)}></input>
-        <button>🔍</button>
-=======
             <input value={text} onChange={(event) => {
                     setText(event.target.value);
                 }}></input>
             <button>🔍</button>
             <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
->>>>>>> 3821822c2163850ef01d90ee31162277a70ec79c
         </div>
     );
 }
@@ -117,36 +129,6 @@ function Filters({activeFilters, setActiveFilters}) {
     );
 }
 
-<<<<<<< HEAD
-function Header() {
-    return(
-        <>
-        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
-        <LoginButton />
-        <br />
-        </>
-    );
-}
-
-function LoginButton() {
-    const Logout = () => {
-        localStorage.setItem('UID', 'null');
-        location.reload();
-    }
-
-    if (UID === 'null')
-        return(
-            <a href='login.html'>
-                <button id='login'>Login</button>
-            </a>
-        );
-    else
-        return(
-            <button id='login' onClick={Logout}>Log Out</button>
-        );
-}
-
-=======
 // function CharityList() {
 //  return(
 //      <ul className="charity-list">
@@ -172,7 +154,6 @@ function LoginButton() {
 //      </ul>
 //  );
 //}
->>>>>>> 3821822c2163850ef01d90ee31162277a70ec79c
 
 function Main() {
     const [fullList, setFullList] = useState([]);
@@ -195,9 +176,13 @@ function Main() {
     );
 }
 
-// Render the app
-const headerRoot = ReactDOM.createRoot(document.querySelector('header'));
-headerRoot.render(<Header />);
+fetchCharityList().then((charities) => {
+    charities.forEach((charity) => {
+        charitiesData.push(charity);
+        fullList.push(charity);
+    });
+    const headerRoot = ReactDOM.createRoot($("header")[0]);
+    headerRoot.render(<Header />);
 
     const mainRoot = ReactDOM.createRoot($("main")[0]);
     mainRoot.render(<Main />);
