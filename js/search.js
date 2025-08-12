@@ -1,6 +1,7 @@
 const { useState, useEffect } = React;
 const { collection, getDocs } = window.firebase;
 const UID = localStorage.getItem('UID');
+const { Header } = window.headerFile;
 
 // Charity data with their Firebase IDs
 let charitiesData = [
@@ -153,35 +154,6 @@ function Filters({activeFilters, setActiveFilters}) {
 //      </ul>
 //  );
 //}
-
-function Header() {
-    return(
-        <>
-        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
-        <LoginButton />
-        <br />
-        </>
-    );
-}
-
-function LoginButton() {
-    const Logout = () => {
-        localStorage.setItem('UID', 'null');
-        location.reload();
-    }
-
-    if (UID === 'null')
-        return(
-            <a href='login.html'>
-                <button id='login'>Login</button>
-            </a>
-        );
-    else
-        return(
-            <button id='login' onClick={Logout}>Log Out</button>
-        );
-}
-
 
 function Main() {
     const [fullList, setFullList] = useState([]);
