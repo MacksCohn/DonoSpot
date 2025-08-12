@@ -64,13 +64,14 @@ main {
 }
 
 /* Home Page Styles */
-.search-bar {
+.search-bar form {
     display: flex;
     margin: 2rem 0 3rem;
     max-width: 600px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden;
+    height: max-content;
 }
 
 .search-bar input {
@@ -80,10 +81,11 @@ main {
     flex-grow: 1;
     font-size: 1rem;
     outline: none;
+    height: 100%;
 }
 
 .search-bar button {
-    padding: 0 1.5rem;
+    padding: 1rem 1.5rem;
     background-color: #ef4444;
     color: white;
     border: none;
