@@ -591,3 +591,7 @@ p.filter-title {
     border: 1px solid #e2e8f0;
     border-radius: 4px;
 }
+
+label.error, span.error {
+    color:#DD0000;
+}
