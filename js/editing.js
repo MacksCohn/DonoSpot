@@ -2,6 +2,7 @@
 // editing.js
 (async () => {
 const { useState, useEffect } = React;
+const { Header } = window.headerFile;
 
 // Get charity ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -32,33 +33,6 @@ async function saveProfile(name, categories, bio, imageUrls) {
 }
 
 let editableIds = []
-function Header() {
-    return(
-        <>
-        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
-        <LoginButton />
-        <br />
-        </>
-    );
-}
-
-function LoginButton() {
-    const Logout = () => {
-        localStorage.setItem('UID', 'null');
-        location.reload();
-    }
-
-    if (UID === 'null')
-        return(
-            <a href='login.html'>
-                <button id='login'>Login</button>
-            </a>
-        );
-    else
-        return(
-            <button id='login' onClick={Logout}>Log Out</button>
-        );
-}
 
 function Main() {
     const [mode, setMode] = useState('read');
