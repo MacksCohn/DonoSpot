@@ -27,6 +27,7 @@ class LoginForm extends Component {
         });
     }
     render() {
+        const { loginFunction, signupFunction } = this.props;
         return(
             <form id='login-form'>
                 <label>Email</label><br />
@@ -35,7 +36,7 @@ class LoginForm extends Component {
                 <label>Password</label><br />
                 <input type="password" id="password" name='password' />
                 <br /><br />
-                <LoginButtons loginFunction={Login} signupFunction={Signup}/>
+                <LoginButtons loginFunction={loginFunction} signupFunction={signupFunction}/>
                 <br />
                 <span id='error-messages' className='error'></span>
             </form>
@@ -43,4 +44,26 @@ class LoginForm extends Component {
     }   
 }
 
+function LoginButtons( {loginFunction, signupFunction} ) {
+    return(
+        <div id='login-button-container'>
+        <button id='login-button' type="button" onClick={loginFunction}>Login</button>
+        <button id='signup-button' type="button" onClick={signupFunction}>Signup</button>
+        </div>
+    );
+}
+
+
+// either returns id or null
+async function GetPageIdFromUser(user) {
+    let userPage = null;
+    const querySnapshot = await getDocs(collection(db, "charities"))
+    querySnapshot.forEach((doc) => {
+        if (doc.data()['OwnerUID'] === user)
+            userPage = doc.id;
+    });
+    return userPage;
+}
+
 window.loginForm.LoginForm = LoginForm;
+window.loginForm.GetPageIdFromUser = GetPageIdFromUser;

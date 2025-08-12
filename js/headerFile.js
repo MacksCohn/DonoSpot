@@ -6,7 +6,7 @@ class Header extends Component {
         return(
             <>
             <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
-            <LoginButton />
+            <LoginButton /> <CreatePage />
             <br />
             </>
         );
@@ -30,6 +30,25 @@ class LoginButton extends Component {
         else
             return(
                 <button id='login' onClick={Logout}>Log Out</button>
+            );
+    }
+}
+
+class CreatePage extends Component {
+    render() {
+        const UID = localStorage.getItem('UID');
+        const hasPage = localStorage.getItem('hasPage');
+        console.log(UID, hasPage);
+        if (UID === 'null' || hasPage === 'true')
+            return(
+                <>
+                </>
+            );
+        else
+            return(
+                <a href='login.html?hereToCreate=true'>
+                    <button id='create-page'>Create My Page</button>
+                </a>
             );
     }
 }
