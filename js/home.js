@@ -1,32 +1,5 @@
 const UID = localStorage.getItem('UID');
-
-function Header() {
-    return(
-        <>
-        <a href="index.html"><div className="logo">DONO<span className="heart">❤</span>SPOT</div></a>
-        <LoginButton />
-        <br />
-        </>
-    );
-}
-
-function LoginButton() {
-    const Logout = () => {
-        localStorage.setItem('UID', 'null');
-        location.reload();
-    }
-
-    if (UID === 'null')
-        return(
-            <a href='login.html'>
-                <button id='login'>Login</button>
-            </a>
-        );
-    else
-        return(
-            <button id='login' onClick={Logout}>Log Out</button>
-        );
-}
+const { Header } = window.headerFile;
 
 function Main() {
     const handleSubmit = (event) => {
