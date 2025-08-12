@@ -1,7 +1,9 @@
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = window.firebase;
 const { collection, getDocs, useState } = window.firebase;
+const { LoginForm, GetPageIdFromUser } = window.loginForm;
 const urlParams = new URLSearchParams(window.location.search);
-let hereToCreate = urlParams.get('hereToCreate') || 'false'; // Default to American Red Cross if no ID
+let hereToCreate = urlParams.get('hereToCreate') || 'false';
+
 
 function Main() {
     const { useState } = React;
@@ -17,6 +19,7 @@ function Main() {
                 const user = userCredential.user;
                 console.log(user, user.uid);
                 localStorage.setItem('UID', user.uid);
+                localStorage.setItem('hasPage', 'false');
                 setCreating(true);
             })
             .catch((error) => {
@@ -25,20 +28,12 @@ function Main() {
                 console.log(errorCode, errorMessage);
             });
     }
-    
+
     if (!creating)
         return(
             <div id='login-box'>
             <h1>Login to DonoSpot</h1>
-            <form>
-            <label>Email</label><br />
-            <input type="email" id="email" /><br/ ><br />
-
-            <label>Password</label><br />
-            <input type="password" id="password" /><br /><br />
-
-            <LoginButtons loginFunction={Login} signupFunction={Signup}/>
-            </form>
+            <LoginForm loginFunction={Login} signupFunction={Signup} />
             </div>
         );
     else
@@ -48,11 +43,11 @@ function Main() {
             <form>
             <label>Charity Name</label><br />
             <input 
-                type='text'
-                id='name' 
-                value={text}
-                placeholder='Charity Name'
-                onChange={(event) => setText(event.target.value)}
+            type='text'
+            id='name' 
+            value={text}
+            placeholder='Charity Name'
+            onChange={(event) => setText(event.target.value)}
             />
             <br/ ><br />
 
@@ -84,9 +79,10 @@ function CreateCharityPage() {
         donate: "",
     }
     addDoc(collection(db, 'charities'), data)
-    .then(
-        data => window.location.href = `charity.html?cid=${data.id}`
-    );
+        .then(
+            data => window.location.href = `charity.html?cid=${data.id}`
+        );
+    localStorage.setItem('hasPage', 'true');
 }
 
 function Login() {
@@ -98,30 +94,19 @@ function Login() {
             const user = userCredential.user;
             localStorage.setItem('UID', user.uid);
             GetPageIdFromUser(user.uid)
-            .then(page => {
-                if (page != null)
-                    window.location.href = `charity.html?cid=${page}`;
-                else
-                    window.location.href = `login.html?hereToCreate=true`;
-            });
+                .then(page => {
+                    if (page != null) {
+                        window.location.href = `charity.html?cid=${page}`;
+                    }
+                    else {
+                        window.location.href = `login.html?hereToCreate=true`;
+                    }
+                });
         })
         .catch((error) => {
-            const errorCode = error.code;
             const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
+            $('#error-messages').text(errorMessage.substring(errorMessage.indexOf(':')+1), '<br />');
         });
-}
-
-
-// either returns id or null
-async function GetPageIdFromUser(user) {
-    let userPage = null;
-    const querySnapshot = await getDocs(collection(db, "charities"))
-    querySnapshot.forEach((doc) => {
-        if (doc.data()['OwnerUID'] === user)
-            userPage = doc.id;
-    });
-    return userPage;
 }
 
 // Test with

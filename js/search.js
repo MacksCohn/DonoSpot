@@ -1,6 +1,7 @@
 const { useState, useEffect } = React;
 const { collection, getDocs } = window.firebase;
 const UID = localStorage.getItem('UID');
+const { Header } = window.headerFile;
 
 // Charity data with their Firebase IDs
 const initialCharitiesData = [
@@ -35,7 +36,7 @@ function filterCharities() {
 
 function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
     const [text, setText] = useState(children);
-
+    const [count, setCount] = useState(0)
     useEffect(() => {
         setText(children);
     }, [children]);
@@ -66,14 +67,23 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
                 filtered.push(charity);
             }
         });
-
+        
+        setCount(filtered.length);
         setFilteredList(filtered);
     }, [text, fullList, activeFilters]);
 
     return (
         <div className="search-bar">
+<<<<<<< HEAD
         <input type="text" value={text} onChange={(e) => setText(e.target.value)}></input>
         <button>🔍</button>
+=======
+            <input value={text} onChange={(event) => {
+                    setText(event.target.value);
+                }}></input>
+            <button>🔍</button>
+            <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
+>>>>>>> 3821822c2163850ef01d90ee31162277a70ec79c
         </div>
     );
 }
@@ -93,6 +103,7 @@ function Filters({activeFilters, setActiveFilters}) {
 
     return (
         <div className="filters">
+            <p className="filter-title">Filter by Category</p>
             {filters.map((filter) => (
                 <button
                     key={filter}
@@ -106,6 +117,7 @@ function Filters({activeFilters, setActiveFilters}) {
     );
 }
 
+<<<<<<< HEAD
 function Header() {
     return(
         <>
@@ -134,6 +146,33 @@ function LoginButton() {
         );
 }
 
+=======
+// function CharityList() {
+//  return(
+//      <ul className="charity-list">
+//          <li data-tags="Large Disaster">
+//          <a href="charity.html" className="charity-name">American Red Cross</a>
+//          </li>
+//          <li data-tags="Large Disaster">
+//          <span className="charity-name">Feeding America</span>
+//          <div className="charity-description">Feeding America is a nationwide network of food banks committed to fighting hunger.</div>
+//          </li>
+//          <li data-tags="Large">
+//          <span className="charity-name">American Heart Association</span>
+//          <div className="charity-description">Dedicated to fighting heart disease and stroke.</div>
+//          </li>
+//          <li data-tags="">
+//          <span className="charity-name">Challenge Americas</span>
+//          <div className="charity-description">Supports wounded veterans through music therapy and arts.</div>
+//          </li>
+//          <li data-tags="Large Disaster">
+//          <span className="charity-name">Americare</span>
+//          <div className="charity-description">Provides health and disaster relief globally.</div>
+//          </li>
+//      </ul>
+//  );
+//}
+>>>>>>> 3821822c2163850ef01d90ee31162277a70ec79c
 
 function Main() {
     const [fullList, setFullList] = useState([]);
