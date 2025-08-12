@@ -70,7 +70,6 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
 
             const tags = (charity.tags || "")
                 .split(",")
-                .map((section) => section.split(":")[1])
                 .filter(Boolean)
                 .map((tag) => tag.trim().toLowerCase());
 
