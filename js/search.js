@@ -159,7 +159,10 @@ function Main() {
     const [filteredList, setFilteredList] = useState([]);
     const [activeFilters, setActiveFilters] = useState(new Set());
     const urlParams = new URLSearchParams(window.location.search);
-    const defaultSearch = urlParams.get('query');
+    
+    const defaultSearch = urlParams.get('query') || '';
+    
+    
     useEffect(() => {
         fetchCharityList().then(charities => {
             setFullList(charities);
