@@ -39,6 +39,7 @@ function Main() {
     const [donateLink, setDonateLink] = useState('');
     const [imageUrls, setImageUrls] = useState('');
     const [charityData, setCharityData] = useState({});
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         loadProfile().then((data) => {
@@ -56,7 +57,6 @@ function Main() {
         const updates = {};
         let hasErrors = false;
         
-        // Collect all updates
         for (const id of editableIds) {
             const element = document.getElementById(id);
             if (element) {
@@ -77,9 +77,9 @@ function Main() {
                         
                         for (const url of urls) {
                             if (!url.match(/\.(jpeg|jpg|png|gif|webp)(\?.*)?$/i)) {
-                                alert('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
                                 hasErrors = true;
-                                break;
+                                setSuccessMessage('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
+                                return;
                             }
                         }
                         
@@ -94,25 +94,31 @@ function Main() {
         if (hasErrors) return;
 
         try {
-            // Include ImageUrls in the updates
             if (imageUrls) {
                 updates.ImageUrls = imageUrls;
+            }
+
+            if (!updates.donate || updates.donate.trim() === '') {
+                alert('A valid donation link (starting with https://) is required for the Donate button to work.');
+                return;
+            }
+            if (!updates.donate.startsWith('http')) {
+                updates.donate = 'https://' + updates.donate;
             }
             
             await firebase.setDoc(profile, updates, { merge: true });
             console.log('Successfully saved:', updates);
             
-            // Update local state
             if (updates.ImageUrls) setImageUrls(updates.ImageUrls);
             if (updates.donate) setDonateLink(updates.donate);
             
-            // Update charity data
             setCharityData(prev => ({ ...prev, ...updates }));
             
+            alert('Success! Changes published.');
             setMode('read');
         } catch (error) {
             console.error('Error saving:', error);
-            alert('Error saving changes. Please try again.');
+            setSuccessMessage('Error saving changes. Please try again.');
         }
     };
 
@@ -125,11 +131,14 @@ function Main() {
             <div>
                 <ModeButton mode={mode} onToggle={ToggleMode} /> 
                 <Editable id='Name' type='h1' mode={mode}>{charityData.Name || 'Loading...'}</Editable>
-                <Editable id='Categories' type='p' mode={mode}>{charityData.Categories || 'Loading...'}</Editable>
+                <div>
+                    <Editable id='Categories' type='p' mode={mode}>{charityData.Categories || 'Loading...'}</Editable>
+                </div>
                 <Editable id='Bio' type='p' mode={mode}>{charityData.Bio || 'Loading...'}</Editable>
                 <MultiImageCarousel mode={mode} imageUrls={imageUrls} setImageUrls={setImageUrls} />
                 <DonateButton mode={mode}>{donateLink}</DonateButton>
                 <br />
+                {successMessage && <div style={{ color: successMessage.includes('Success!') ? 'green' : 'red', fontWeight: 'bold', marginBottom: '10px' }}>{successMessage}</div>}
                 <PublishButton onPublish={handlePublish} />
             </div>
         );
@@ -137,7 +146,9 @@ function Main() {
         return(
             <div>
                 <Editable id='Name' type='h1' mode={'read'}>{charityData.Name || 'Loading...'}</Editable>
-                <Editable id='Categories' type='p' mode={'read'}>{charityData.Categories || 'Loading...'}</Editable>
+                <div>
+                    <Editable id='Categories' type='p' mode={'read'}>{charityData.Categories || 'Loading...'}</Editable>
+                </div>
                 <Editable id='Bio' type='p' mode={'read'}>{charityData.Bio || 'Loading...'}</Editable>
                 <MultiImageCarousel mode={'read'} imageUrls={imageUrls} />
                 <DonateButton mode={'read'}>{donateLink}</DonateButton>
@@ -152,7 +163,6 @@ function MultiImageCarousel({mode, imageUrls, setImageUrls}) {
     const [hasError, setHasError] = useState(false);
     const [currentImages, setCurrentImages] = useState([]);
 
-    // Parse and update image URLs whenever the prop changes
     useEffect(() => {
         const urls = (imageUrls || '').split(',').map(url => url.trim()).filter(url => url);
         setCurrentImages(urls);
@@ -248,51 +258,6 @@ function MultiImageCarousel({mode, imageUrls, setImageUrls}) {
                 <p className="image-hint">
                     <strong>Example:</strong> https://i.imgur.com/nQUJW9e.jpeg, https://i.imgur.com/example2.jpg
                 </p>
-                
-                {currentImages.length > 0 && (
-                    <div className="carousel-preview">
-                        <h4>Live Preview:</h4>
-                        <div className="carousel-container">
-                            {currentImages.length > 1 && (
-                                <button className="carousel-button prev" onClick={prevImage}>
-                                    &lt;
-                                </button>
-                            )}
-                            <div className="carousel-slide">
-                                {isLoading && <p className="image-loading">Loading preview...</p>}
-                                <img 
-                                    src={currentImages[currentIndex]}
-                                    alt={`Preview ${currentIndex + 1}`}
-                                    className="preview-image"
-                                    onError={handleImageError}
-                                    onLoad={handleImageLoad}
-                                    onLoadStart={() => setIsLoading(true)}
-                                />
-                                {hasError && (
-                                    <p className="image-error">
-                                        Couldn't load preview. Check the URL is correct and publicly accessible.
-                                    </p>
-                                )}
-                            </div>
-                            {currentImages.length > 1 && (
-                                <button className="carousel-button next" onClick={nextImage}>
-                                    &gt;
-                                </button>
-                            )}
-                        </div>
-                        {currentImages.length > 1 && (
-                            <div className="carousel-indicators">
-                                {currentImages.map((_, index) => (
-                                    <span 
-                                        key={index}
-                                        className={`indicator ${index === currentIndex ? 'active' : ''}`}
-                                        onClick={() => setCurrentIndex(index)}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
         );
     }
@@ -306,7 +271,7 @@ function ModeButton({mode, onToggle}) {
     else if (mode === 'edit')
         return(
             <>
-                <button onClick={onToggle}>Read</button>
+                <button onClick={onToggle}>Preview</button>
                 <br />
             </>
         );
@@ -317,73 +282,12 @@ function PublishButton({ onPublish }) {
         <button onClick={onPublish}>Publish Changes</button>
     );
 }
- 
-function PublishChanges() {
-    const updates = {};
-    let hasErrors = false;
-    
-    // Collect all updates
-    for (const id of editableIds) {
-        const element = document.getElementById(id);
-        if (element) {
-            let value = element.value || element.textContent;
-            
-            // Special handling for ImageUrls
-            if (id === 'ImageUrls') {
-                value = value.trim();
-                if (value) {
-                    // Process each URL
-                    const urls = value.split(',')
-                        .map(url => url.trim())
-                        .filter(url => url)
-                        .map(url => {
-                            if (!url.startsWith('http')) {
-                                url = 'https://' + url;
-                            }
-                            return url;
-                        });
-                    
-                    // Basic URL validation
-                    for (const url of urls) {
-                        if (!url.match(/\.(jpeg|jpg|png|gif|webp)(\?.*)?$/i)) {
-                            alert('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
-                            hasErrors = true;
-                            break;
-                        }
-                    }
-                    
-                    value = urls.join(', ');
-                }
-            }
-            
-            updates[id] = value;
-        }
-    }
-
-    if (hasErrors) return;
-
-    // Save to Firestore
-    firebase.setDoc(profile, updates, { merge: true })
-        .then(() => {
-            console.log('Successfully saved:', updates);
-            // Update local state without reloading
-            if (updates.ImageUrls) {
-                setImageUrls(updates.ImageUrls);
-            }
-            if (updates.donate) {
-                setDonateLink(updates.donate);
-            }
-            setMode('read'); // Switch back to read mode
-        })
-        .catch((error) => {
-            console.error('Error saving:', error);
-            alert('Error saving changes. Please try again.');
-        });
-}
 
 function Editable({ type, children, mode, id}) {
     const Type = type;
     const [text, setText] = useState(children);
+    const [largeOption, setLargeOption] = useState('None');
+    const [disasterOption, setDisasterOption] = useState('None');
 
     useEffect(() => {
         setText(children);
@@ -395,13 +299,22 @@ function Editable({ type, children, mode, id}) {
         });
     }, []);
 
+    useEffect(() => {
+        if (id === 'Categories') {
+            const t = (text || '').toLowerCase();
+            setLargeOption(t.includes('large') ? 'Large' : 'None');
+            setDisasterOption(t.includes('disaster') ? 'Disaster Relief' : 'None');
+        }
+    }, [text, id]);
+
     if (!editableIds.includes(id))
         editableIds.push(id);
 
     if (type === 'button') {
         if (mode === 'read') {
+            const safeHref = text ? (text.startsWith('http') ? text : 'https://' + text) : '';
             return(
-                <a href={text}>
+                <a href={safeHref}>
                     <Type id={id} className='donate'>Donate</Type>
                 </a>
             );
@@ -409,8 +322,8 @@ function Editable({ type, children, mode, id}) {
         else if (mode === 'edit') {
             return(
                 <>
-                Donation Link:
-                <textarea id={id} value={text} onChange={(e) => setText(e.target.value)}></textarea>
+                Donation Link (must start with https:// for the button to work):
+                <textarea id={id} value={text || 'https://'} onChange={(e) => setText(e.target.value)}></textarea>
                 <br/>
                 </>
             );
@@ -423,12 +336,58 @@ function Editable({ type, children, mode, id}) {
             );
         }
         else if (mode === 'edit') {
-            return(
-                <>
-                <textarea id={id} value={text} onChange={(e) => setText(e.target.value)}></textarea>
-                <br/>
-                </>
-            );
+            if (id === 'Categories') {
+                const combine = (l, d) => {
+                    const parts = [];
+                    if (l === 'Large') parts.push('Large');
+                    if (d === 'Disaster Relief') parts.push('Disaster Relief');
+                    return parts.join(', ');
+                };
+                return(
+                    <>
+                    <label htmlFor={id}>Categories:</label>
+                    <div>
+                        <span>Size: </span>
+                        <select
+                            value={largeOption}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setLargeOption(val);
+                                setText(combine(val, disasterOption));
+                            }}
+                        >
+                            <option>None</option>
+                            <option>Large</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span>Type: </span>
+                        <select
+                            value={disasterOption}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setDisasterOption(val);
+                                setText(combine(largeOption, val));
+                            }}
+                        >
+                            <option>None</option>
+                            <option>Disaster Relief</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id={id} value={text || ''} readOnly />
+                    <br/>
+                    </>
+                );
+            } else {
+                return(
+                    <>
+                    {id === 'Bio' && <label htmlFor={id}>Description:</label>}
+                    {id === 'Categories' && <label htmlFor={id}>Categories:</label>}
+                    <textarea id={id} value={text} onChange={(e) => setText(e.target.value)}></textarea>
+                    <br/>
+                    </>
+                );
+            }
         }
     }
 }
