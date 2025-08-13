@@ -99,7 +99,7 @@ function Main() {
             }
 
             if (!updates.donate || updates.donate.trim() === '') {
-                setSuccessMessage('A valid donation link (starting with https://) is required for the Donate button to work.');
+                alert('A valid donation link (starting with https://) is required for the Donate button to work.');
                 return;
             }
             if (!updates.donate.startsWith('http')) {
@@ -114,8 +114,7 @@ function Main() {
             
             setCharityData(prev => ({ ...prev, ...updates }));
             
-            setSuccessMessage('Success!');
-            setTimeout(() => setSuccessMessage(''), 3000);
+            alert('Success! Changes published.');
             setMode('read');
         } catch (error) {
             console.error('Error saving:', error);
@@ -272,12 +271,7 @@ function ModeButton({mode, onToggle}) {
     else if (mode === 'edit')
         return(
             <>
-                <button 
-                    onClick={onToggle} 
-                    style={{ backgroundColor: 'green', color: 'white', fontWeight: 'bold' }}
-                >
-                    Preview
-                </button>
+                <button onClick={onToggle}>Preview</button>
                 <br />
             </>
         );
