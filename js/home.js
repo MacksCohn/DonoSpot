@@ -37,7 +37,12 @@ function Main() {
                 our platform.
             </p>
 
-            <a href="search.html?query=">Get Started</a>
+            <form action="/search.html">
+                <button type="submit" className="get-started-btn">
+                    Get Started
+                </button>
+            </form>
+
 
             <h3>Features</h3>
             <ul>
