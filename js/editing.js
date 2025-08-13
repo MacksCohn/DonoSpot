@@ -39,6 +39,7 @@ function Main() {
     const [donateLink, setDonateLink] = useState('');
     const [imageUrls, setImageUrls] = useState('');
     const [charityData, setCharityData] = useState({});
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         loadProfile().then((data) => {
@@ -56,7 +57,6 @@ function Main() {
         const updates = {};
         let hasErrors = false;
         
-        // Collect all updates
         for (const id of editableIds) {
             const element = document.getElementById(id);
             if (element) {
@@ -77,9 +77,9 @@ function Main() {
                         
                         for (const url of urls) {
                             if (!url.match(/\.(jpeg|jpg|png|gif|webp)(\?.*)?$/i)) {
-                                alert('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
                                 hasErrors = true;
-                                break;
+                                setSuccessMessage('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
+                                return;
                             }
                         }
                         
@@ -99,7 +99,7 @@ function Main() {
             }
 
             if (!updates.donate || updates.donate.trim() === '') {
-                alert('A valid donation link (starting with https://) is required for the Donate button to work.');
+                setSuccessMessage('A valid donation link (starting with https://) is required for the Donate button to work.');
                 return;
             }
             if (!updates.donate.startsWith('http')) {
@@ -114,11 +114,12 @@ function Main() {
             
             setCharityData(prev => ({ ...prev, ...updates }));
             
-            alert('Success! Changes published.');
+            setSuccessMessage('Success!');
+            setTimeout(() => setSuccessMessage(''), 3000);
             setMode('read');
         } catch (error) {
             console.error('Error saving:', error);
-            alert('Error saving changes. Please try again.');
+            setSuccessMessage('Error saving changes. Please try again.');
         }
     };
 
@@ -138,6 +139,7 @@ function Main() {
                 <MultiImageCarousel mode={mode} imageUrls={imageUrls} setImageUrls={setImageUrls} />
                 <DonateButton mode={mode}>{donateLink}</DonateButton>
                 <br />
+                {successMessage && <div style={{ color: successMessage.includes('Success!') ? 'green' : 'red', fontWeight: 'bold', marginBottom: '10px' }}>{successMessage}</div>}
                 <PublishButton onPublish={handlePublish} />
             </div>
         );
@@ -162,7 +164,6 @@ function MultiImageCarousel({mode, imageUrls, setImageUrls}) {
     const [hasError, setHasError] = useState(false);
     const [currentImages, setCurrentImages] = useState([]);
 
-    // Parse and update image URLs whenever the prop changes
     useEffect(() => {
         const urls = (imageUrls || '').split(',').map(url => url.trim()).filter(url => url);
         setCurrentImages(urls);
@@ -258,51 +259,6 @@ function MultiImageCarousel({mode, imageUrls, setImageUrls}) {
                 <p className="image-hint">
                     <strong>Example:</strong> https://i.imgur.com/nQUJW9e.jpeg, https://i.imgur.com/example2.jpg
                 </p>
-                
-                {currentImages.length > 0 && (
-                    <div className="carousel-preview">
-                        <h4>Live Preview:</h4>
-                        <div className="carousel-container">
-                            {currentImages.length > 1 && (
-                                <button className="carousel-button prev" onClick={prevImage}>
-                                    &lt;
-                                </button>
-                            )}
-                            <div className="carousel-slide">
-                                {isLoading && <p className="image-loading">Loading preview...</p>}
-                                <img 
-                                    src={currentImages[currentIndex]}
-                                    alt={`Preview ${currentIndex + 1}`}
-                                    className="preview-image"
-                                    onError={handleImageError}
-                                    onLoad={handleImageLoad}
-                                    onLoadStart={() => setIsLoading(true)}
-                                />
-                                {hasError && (
-                                    <p className="image-error">
-                                        Couldn't load preview. Check the URL is correct and publicly accessible.
-                                    </p>
-                                )}
-                            </div>
-                            {currentImages.length > 1 && (
-                                <button className="carousel-button next" onClick={nextImage}>
-                                    &gt;
-                                </button>
-                            )}
-                        </div>
-                        {currentImages.length > 1 && (
-                            <div className="carousel-indicators">
-                                {currentImages.map((_, index) => (
-                                    <span 
-                                        key={index}
-                                        className={`indicator ${index === currentIndex ? 'active' : ''}`}
-                                        onClick={() => setCurrentIndex(index)}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
         );
     }
@@ -316,7 +272,12 @@ function ModeButton({mode, onToggle}) {
     else if (mode === 'edit')
         return(
             <>
-                <button onClick={onToggle}>Preview</button>
+                <button 
+                    onClick={onToggle} 
+                    style={{ backgroundColor: 'green', color: 'white', fontWeight: 'bold' }}
+                >
+                    Preview
+                </button>
                 <br />
             </>
         );
@@ -326,69 +287,6 @@ function PublishButton({ onPublish }) {
     return(
         <button onClick={onPublish}>Publish Changes</button>
     );
-}
- 
-function PublishChanges() {
-    const updates = {};
-    let hasErrors = false;
-    
-    // Collect all updates
-    for (const id of editableIds) {
-        const element = document.getElementById(id);
-        if (element) {
-            let value = element.value || element.textContent;
-            
-            // Special handling for ImageUrls
-            if (id === 'ImageUrls') {
-                value = value.trim();
-                if (value) {
-                    // Process each URL
-                    const urls = value.split(',')
-                        .map(url => url.trim())
-                        .filter(url => url)
-                        .map(url => {
-                            if (!url.startsWith('http')) {
-                                url = 'https://' + url;
-                            }
-                            return url;
-                        });
-                    
-                    // Basic URL validation
-                    for (const url of urls) {
-                        if (!url.match(/\.(jpeg|jpg|png|gif|webp)(\?.*)?$/i)) {
-                            alert('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
-                            hasErrors = true;
-                            break;
-                        }
-                    }
-                    
-                    value = urls.join(', ');
-                }
-            }
-            
-            updates[id] = value;
-        }
-    }
-
-    if (hasErrors) return;
-
-    // Save to Firestore
-    firebase.setDoc(profile, updates, { merge: true })
-        .then(() => {
-            console.log('Successfully saved:', updates);
-            // Update local state without reloading
-            if (updates.ImageUrls) {
-                setImageUrls(updates.ImageUrls);
-            }
-            if (updates.donate) {
-                setDonateLink(updates.donate);
-            }
-            setMode('read'); // Switch back to read mode
-        })
-        .catch((error) => {
-            console.error('Error saving:', error);
-            alert('Error saving changes. Please try again.');
-        });
 }
 
 function Editable({ type, children, mode, id}) {
