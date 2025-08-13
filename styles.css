@@ -64,6 +64,14 @@ main {
 }
 
 /* Home Page Styles */
+.main-home {
+    display: grid;
+    grid-template-areas: '. .';
+}
+.main-home img{
+    max-height: 40vh;
+    max-width: 30vw
+}
 .search-bar form {
     display: flex;
     margin: 2rem 0 3rem;
