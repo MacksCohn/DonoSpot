@@ -19,7 +19,6 @@ function Main() {
             <h1>
                 Dono<span className="heart">❤</span>Spot
             </h1>
-
             <div className="search-bar">
                 <form onSubmit={handleSubmit}>
                     <input
@@ -30,26 +29,31 @@ function Main() {
                     <button type="submit">🔍</button>
                 </form>
             </div>
+            <div className="main-home">
+                <div className="left-side-home">
+                    <h2>Supporting charities made easy</h2>
+                    <p>
+                        Discover and connect with charities that matter to you
+                        through our platform.
+                    </p>
 
-            <h2>Supporting charities made easy</h2>
-            <p>
-                Discover and connect with charities that matter to you through
-                our platform.
-            </p>
+                    <form action="/search.html">
+                        <button type="submit" className="get-started-btn">
+                            Browse Charities
+                        </button>
+                    </form>
 
-            <form action="/search.html">
-                <button type="submit" className="get-started-btn">
-                    Browse Charities
-                </button>
-            </form>
-
-
-            <h3>Features</h3>
-            <ul>
-                <li>Browse Charities</li>
-                <li>Explore Categories</li>
-                <li>Join Communities</li>
-            </ul>
+                    <h3>Features</h3>
+                    <ul>
+                        <li>Browse Charities</li>
+                        <li>Explore Categories</li>
+                        <li>Join Communities</li>
+                    </ul>
+                </div>
+                <div className="right-side-home">
+                    <img src="./images/giving.png"></img>
+                </div>
+            </div>
         </>
     );
 }
