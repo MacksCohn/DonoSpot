@@ -2,10 +2,14 @@ const UID = localStorage.getItem('UID');
 const { Header } = window.headerFile;
 const { collection, getDocs } = window.firebase;
 const { GetPageIdFromUser } = window.loginForm;
-if (UID != 'null' && UID != null) {
-    let associatedCharity = GetPageIdFromUser(UID);
-    if (associatedCharity != null)
-        localStorage.setItem('hasPage', 'true');
+if (UID != 'null') {
+    let associatedCharity = GetPageIdFromUser(UID)
+    .then((result) => {
+        if (result != null)
+            localStorage.setItem('hasPage', 'true');
+        else
+            localStorage.setItem('hasPage', 'false');
+    });
 }
 
 function Main() {
