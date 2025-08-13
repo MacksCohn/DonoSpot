@@ -39,7 +39,7 @@ function Main() {
 
             <form action="/search.html">
                 <button type="submit" className="get-started-btn">
-                    Get Started
+                    Browse Charities
                 </button>
             </form>
 
