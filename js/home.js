@@ -41,7 +41,7 @@ function Main() {
                         through our platform.
                     </p>
 
-                    <form action="/search.html">
+                    <form action="./search.html">
                         <button type="submit" className="get-started-btn">
                             Browse Charities
                         </button>
