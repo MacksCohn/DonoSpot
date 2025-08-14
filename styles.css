@@ -491,7 +491,7 @@ p.filter-title {
     background-color: #fff5f5;
     padding: 0.5rem;
     border-radius: 4px;
-    margin: 0.5rem 0;
+    margin: 0.5rem 0;[
     border-left: 3px solid #e53e3e;
 }
 
@@ -599,4 +599,99 @@ p.filter-title {
     .carousel-image {
         max-width: calc(100% - 25px); /* Adjusted for mobile */
     }
+}
+
+/* =========================
+   ADDITIONS FOR TYPE UI
+   ========================= */
+.success-msg {
+    color: #16a34a;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.error-msg {
+    color: #dc2626;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Compact the “Size” row spacing */
+.size-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* Wrap for the fake select + panel */
+.type-wrap {
+    position: relative;
+    max-width: 600px;
+    margin-bottom: 6px;
+}
+
+/* The select that mirrors native look */
+.type-select {
+    width: 100%;
+}
+
+/* Dropdown panel spacing & look */
+.type-panel {
+    position: absolute;
+    z-index: 10;
+    background: white;
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    margin-top: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 6px 6px 4px 6px; /* tighter */
+}
+
+/* Scrollable list */
+.type-list {
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+/* Each option: text left, checkbox right, tight spacing, aligned */
+.category-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px;
+    line-height: 1.2;
+    gap: 8px;
+    margin: 0;
+}
+.category-option span {
+    flex: 1;
+    text-align: left;
+}
+.category-option input[type="checkbox"] {
+    margin: 0;
+}
+
+/* Panel action row */
+.type-actions {
+    text-align: right;
+    margin-top: 6px;
+}
+.type-actions button {
+    padding: 6px 10px;
+}
+
+/* Category dropdown styling */
+.category-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 6px;
+    font-size: 0.9rem;
+}
+
+.category-dropdown {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 4px;
 }
