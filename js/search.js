@@ -89,13 +89,18 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
     }, [text, fullList, activeFilters]);
 
     return (
+        <>
         <div className="search-bar">
-            <input value={text} onChange={(event) => {
-                    setText(event.target.value);
-                }}></input>
-            <button>🔍</button>
-            <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
+            <form>
+                <input value={text} onChange={(event) => {
+                        setText(event.target.value);
+                    }}></input>
+                <button>🔍</button>
+            </form>
+            <br />
         </div>
+        <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
+        </>
     );
 }
 
@@ -159,7 +164,10 @@ function Main() {
     const [filteredList, setFilteredList] = useState([]);
     const [activeFilters, setActiveFilters] = useState(new Set());
     const urlParams = new URLSearchParams(window.location.search);
-    const defaultSearch = urlParams.get('query');
+    
+    const defaultSearch = urlParams.get('query') || '';
+    
+    
     useEffect(() => {
         fetchCharityList().then(charities => {
             setFullList(charities);

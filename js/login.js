@@ -97,9 +97,11 @@ function Login() {
                 .then(page => {
                     if (page != null) {
                         window.location.href = `charity.html?cid=${page}`;
+                        localStorage.setItem('hasPage', 'true');
                     }
                     else {
                         window.location.href = `login.html?hereToCreate=true`;
+                        localStorage.setItem('hasPage', 'false');
                     }
                 });
         })

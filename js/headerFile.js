@@ -38,7 +38,6 @@ class CreatePage extends Component {
     render() {
         const UID = localStorage.getItem('UID');
         const hasPage = localStorage.getItem('hasPage');
-        console.log(UID, hasPage);
         if (UID === 'null' || hasPage === 'true')
             return(
                 <>
