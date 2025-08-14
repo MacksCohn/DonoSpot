@@ -504,21 +504,10 @@ function Editable({ type, children, mode, id}) {
                         </select>
 
                         {typeOpen && (
-                            <div
-                                className="category-dropdown"
-                                style={{
-                                    position:'absolute',
-                                    zIndex:10,
-                                    background:'white',
-                                    width:'100%',
-                                    border:'1px solid #e2e8f0',
-                                    borderRadius:'6px',
-                                    marginTop:'2px',
-                                    boxShadow:'0 2px 8px rgba(0,0,0,0.08)'
-                                }}
-                            >
+                            <div className="category-dropdown" >
                                 {typeOptions.map(t => (
-                                    <label key={t} className="category-option">
+                                    <div key={t} className="category-option">
+                                    <label>
                                         <span>{t}</span>
                                         <input
                                             type="checkbox"
@@ -534,9 +523,11 @@ function Editable({ type, children, mode, id}) {
                                             }}
                                         />
                                     </label>
+                                    <br />
+                                    </div>
                                 ))}
                                 <div style={{ textAlign:'right', marginTop:'4px', padding:'0 6px 6px' }}>
-                                    <button type="button" onClick={()=>setTypeOpen(false)} style={{ padding:'6px 10px' }}>Done</button>
+                                    <button type="button" onClick={()=>setTypeOpen(false)} style={{ padding:'6px 10px' }}>Confirm Categories</button>
                                 </div>
                             </div>
                         )}
