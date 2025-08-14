@@ -44,7 +44,8 @@ function Main() {
     useEffect(() => {
         loadProfile().then((data) => {
             setCharityData(data);
-            if (data.donate) setDonateLink(data.donate);
+            const donateLinkCheck = data.donate || "https://Donate";
+            setDonateLink(donateLinkCheck);
             if (data.ImageUrls) {
                 setImageUrls(data.ImageUrls);
             } else if (data.ImageUrl) {
