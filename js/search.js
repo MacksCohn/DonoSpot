@@ -90,11 +90,13 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
 
     return (
         <div className="search-bar">
-            <input value={text} onChange={(event) => {
-                    setText(event.target.value);
-                }}></input>
-            <button>🔍</button>
-            <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
+            <form>
+                <input value={text} onChange={(event) => {
+                        setText(event.target.value);
+                    }}></input>
+                <button>🔍</button>
+                <p className="charity-count">{count} result{count !== 1 && 's'} found</p>
+            </form>
         </div>
     );
 }
