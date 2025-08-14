@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
         <title>DonoSpot - Home</title>
         <link rel="stylesheet" href="styles.css">
         <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -16,6 +17,29 @@
 
         <main>
         </main>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+            import { getFirestore, doc, addDoc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+            import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+            const firebaseConfig = {
+                    apiKey: "AIzaSyC_CiRqTcPQsXLmSWOsXFqI2WwXFmYxTD0",
+                    authDomain: "donospot.firebaseapp.com",
+                    projectId: "donospot",
+                    storageBucket: "donospot.appspot.com",
+                    messagingSenderId: "850395903397",
+                    appId: "1:850395903397:web:92701b3fba5a9d9eaa244c",
+                    measurementId: "G-GFLZSWW3TD",
+                };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+
+            window.firebase = { addDoc, getDoc, setDoc, doc, createUserWithEmailAndPassword, signInWithEmailAndPassword, collection, getDocs };
+            window.db = db;
+            window.auth = auth;
+        </script>
+        <script type='text/babel' src='./js/loginForm.js'></script>
         <script type='text/babel' src='./js/headerFile.js'></script>
         <script type='text/babel' src='./js/home.js'></script>
     </body>
