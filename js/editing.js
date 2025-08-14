@@ -401,8 +401,10 @@ function PublishChanges() {
 function Editable({ type, children, mode, id}) {
     const Type = type;
     const [text, setText] = useState(children);
-    const [largeOption, setLargeOption] = useState('None');
-    const [disasterOption, setDisasterOption] = useState('None');
+    const [sizeOption, setSizeOption] = useState('None');
+    const typeOptions = ['Disaster Relief','Food','War','Health'];
+    const [selectedTypes, setSelectedTypes] = useState(new Set());
+    const [typeOpen, setTypeOpen] = useState(false);
 
     useEffect(() => {
         setText(children);
@@ -416,9 +418,20 @@ function Editable({ type, children, mode, id}) {
 
     useEffect(() => {
         if (id === 'Categories') {
-            const t = (text || '').toLowerCase();
-            setLargeOption(t.includes('large') ? 'Large' : 'None');
-            setDisasterOption(t.includes('disaster') ? 'Disaster Relief' : 'None');
+            const parts = (text || '').split(',').map(s => s.trim()).filter(Boolean);
+            let size = 'None';
+            ['Small','Medium','Large'].forEach(s => {
+                if (parts.map(p=>p.toLowerCase()).includes(s.toLowerCase())) size = s;
+            });
+            setSizeOption(size);
+            const set = new Set();
+            parts.forEach(p => {
+                if (!['Small','Medium','Large'].includes(p)) {
+                    const match = typeOptions.find(opt => opt.toLowerCase() === p.toLowerCase());
+                    if (match) set.add(match);
+                }
+            });
+            setSelectedTypes(set);
         }
     }, [text, id]);
 
@@ -452,44 +465,84 @@ function Editable({ type, children, mode, id}) {
         }
         else if (mode === 'edit') {
             if (id === 'Categories') {
-                const combine = (l, d) => {
-                    const parts = [];
-                    if (l === 'Large') parts.push('Large');
-                    if (d === 'Disaster Relief') parts.push('Disaster Relief');
-                    return parts.join(', ');
+                const combined = () => {
+                    const out = [];
+                    if (sizeOption !== 'None') out.push(sizeOption);
+                    out.push(...Array.from(selectedTypes));
+                    return out.join(', ');
                 };
+                const displaySelected = selectedTypes.size > 0 ? Array.from(selectedTypes).join(', ') : 'Select type(s)';
                 return(
                     <>
                     <label htmlFor={id}>Categories:</label>
-                    <div>
+                    <div style={{ marginBottom: '8px' }}>
                         <span>Size: </span>
                         <select
-                            value={largeOption}
+                            value={sizeOption}
                             onChange={(e) => {
                                 const val = e.target.value;
-                                setLargeOption(val);
-                                setText(combine(val, disasterOption));
+                                setSizeOption(val);
+                                setText([val !== 'None' ? val : null, ...Array.from(selectedTypes)].filter(Boolean).join(', '));
                             }}
                         >
                             <option>None</option>
+                            <option>Small</option>
+                            <option>Medium</option>
                             <option>Large</option>
                         </select>
                     </div>
-                    <div>
-                        <span>Type: </span>
+
+                    <div style={{ position:'relative', maxWidth:'600px', marginBottom:'6px' }}>
+                        <label>Type: </label>
                         <select
-                            value={disasterOption}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setDisasterOption(val);
-                                setText(combine(largeOption, val));
-                            }}
+                            value={displaySelected}
+                            onMouseDown={(e) => { e.preventDefault(); setTypeOpen(!typeOpen); }}
+                            onChange={() => {}}
+                            style={{ width:'100%' }}
                         >
-                            <option>None</option>
-                            <option>Disaster Relief</option>
+                            <option value={displaySelected}>{displaySelected}</option>
                         </select>
+
+                        {typeOpen && (
+                            <div
+                                className="category-dropdown"
+                                style={{
+                                    position:'absolute',
+                                    zIndex:10,
+                                    background:'white',
+                                    width:'100%',
+                                    border:'1px solid #e2e8f0',
+                                    borderRadius:'6px',
+                                    marginTop:'2px',
+                                    boxShadow:'0 2px 8px rgba(0,0,0,0.08)'
+                                }}
+                            >
+                                {typeOptions.map(t => (
+                                    <label key={t} className="category-option">
+                                        <span>{t}</span>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTypes.has(t)}
+                                            onChange={() => {
+                                                const next = new Set(selectedTypes);
+                                                if (next.has(t)) next.delete(t); else next.add(t);
+                                                setSelectedTypes(next);
+                                                setText([
+                                                    sizeOption !== 'None' ? sizeOption : null,
+                                                    ...Array.from(next)
+                                                ].filter(Boolean).join(', '));
+                                            }}
+                                        />
+                                    </label>
+                                ))}
+                                <div style={{ textAlign:'right', marginTop:'4px', padding:'0 6px 6px' }}>
+                                    <button type="button" onClick={()=>setTypeOpen(false)} style={{ padding:'6px 10px' }}>Done</button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <input type="hidden" id={id} value={text || ''} readOnly />
+
+                    <input type="hidden" id={id} value={combined()} readOnly />
                     <br/>
                     </>
                 );
