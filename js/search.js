@@ -105,7 +105,7 @@ function SearchBar({children = "", fullList, setFilteredList, activeFilters}) {
 }
 
 function Filters({activeFilters, setActiveFilters}) {
-    const filters = ["Large", "Disaster Relief"]; // Add more tags here if needed
+    const filters = ["Small", "Medium", "Large", 'Disaster Relief','Food','War','Health', 'Veterans']; // Add more tags here if needed
 
     const toggleFilter = (filter) => {
         const updated = new Set(activeFilters);

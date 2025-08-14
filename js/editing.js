@@ -402,7 +402,7 @@ function Editable({ type, children, mode, id}) {
     const Type = type;
     const [text, setText] = useState(children);
     const [sizeOption, setSizeOption] = useState('None');
-    const typeOptions = ['Disaster Relief','Food','War','Health'];
+    const typeOptions = ['Disaster Relief','Food','War','Health', 'Veterans'];
     const [selectedTypes, setSelectedTypes] = useState(new Set());
     const [typeOpen, setTypeOpen] = useState(false);
 
