@@ -36,7 +36,7 @@ let editableIds = []
 
 function Main() {
     const [mode, setMode] = useState('read');
-    const [donateLink, setDonateLink] = useState('');
+    const [donateLink, setDonateLink] = useState('https://');
     const [imageUrls, setImageUrls] = useState('');
     const [charityData, setCharityData] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
@@ -44,7 +44,7 @@ function Main() {
     useEffect(() => {
         loadProfile().then((data) => {
             setCharityData(data);
-            const donateLinkCheck = data.donate || "https://Donate";
+            const donateLinkCheck = data.donate || donateLink;
             setDonateLink(donateLinkCheck);
             if (data.ImageUrls) {
                 setImageUrls(data.ImageUrls);

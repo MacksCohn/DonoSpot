@@ -430,6 +430,10 @@ p.filter-title {
     display: block;
 }
 
+label.error, span.error {
+    color: red;
+}
+
 /* Single Image Styles */
 .single-image {
     margin: 2rem 0;
@@ -677,4 +681,5 @@ p.filter-title {
 .type-actions button {
     padding: 6px 10px;
 }
+
 
