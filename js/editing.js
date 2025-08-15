@@ -88,6 +88,8 @@ function Main() {
                         value = urls.join(', ');
                     }
                 }
+                else if (id === 'donate')
+                    value = $('#donate').parent().attr('href') || element.value;
                 
                 updates[id] = value;
             }
@@ -111,6 +113,8 @@ function Main() {
             }
             
             await firebase.setDoc(profile, updates, { merge: true });
+            console.log($('#donate').parent().attr('href'));
+            setDonateLink($('#donate').parent().attr('href'));
             console.log('Successfully saved:', updates);
             
             // Update local state
@@ -336,69 +340,6 @@ function PublishButton({ onPublish }) {
     );
 }
  
-function PublishChanges() {
-    const updates = {};
-    let hasErrors = false;
-    
-    // Collect all updates
-    for (const id of editableIds) {
-        const element = document.getElementById(id);
-        if (element) {
-            let value = element.value || element.textContent;
-            
-            // Special handling for ImageUrls
-            if (id === 'ImageUrls') {
-                value = value.trim();
-                if (value) {
-                    // Process each URL
-                    const urls = value.split(',')
-                        .map(url => url.trim())
-                        .filter(url => url)
-                        .map(url => {
-                            if (!url.startsWith('http')) {
-                                url = 'https://' + url;
-                            }
-                            return url;
-                        });
-                    
-                    // Basic URL validation
-                    for (const url of urls) {
-                        if (!url.match(/\.(jpeg|jpg|png|gif|webp)(\?.*)?$/i)) {
-                            hasErrors = true;
-                            alert('Image URLs must end with .jpg, .jpeg, .png, .gif, or .webp');
-                            break;
-                        }
-                    }
-                    
-                    value = urls.join(', ');
-                }
-            }
-            
-            updates[id] = value;
-        }
-    }
-
-    if (hasErrors) return;
-
-    // Save to Firestore
-    firebase.setDoc(profile, updates, { merge: true })
-        .then(() => {
-            console.log('Successfully saved:', updates);
-            // Update local state without reloading
-            if (updates.ImageUrls) {
-                setImageUrls(updates.ImageUrls);
-            }
-            if (updates.donate) {
-                setDonateLink(updates.donate);
-            }
-            setMode('read'); // Switch back to read mode
-        })
-        .catch((error) => {
-            console.error('Error saving:', error);
-            alert('Error saving changes. Please try again.');
-        });
-}
-
 function Editable({ type, children, mode, id}) {
     const Type = type;
     const [text, setText] = useState(children);
