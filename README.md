@@ -7,7 +7,7 @@ Omar El-Rifai
 Brendan Mulligan
 Hector Vazquez
 
-##Startup Instructions
+## Startup Instructions
 This website requires the use of a live server. 
 If you have a way to run a live server already, you may be able to use that method to run this site.
 Otherwise, the instructions below explain how to run this using Visual Studio Code.
